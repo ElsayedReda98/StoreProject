@@ -10,39 +10,34 @@ using StoreProject.Models;
 
 namespace StoreProject.Controllers
 {
-    public class CategoriesController : Controller
+    public class BrandsController : Controller
     {
         private readonly StoreProjectContext _context;
 
-        public CategoriesController(StoreProjectContext context)
+        public BrandsController(StoreProjectContext context)
         {
             _context = context;
         }
-        // Index Before Search
-        //*********************************************************
-        // GET: Categories
+
+        // GET: Brands
         //public async Task<IActionResult> Index()
         //{
-        //    return View(await _context.Category.ToListAsync());
+        //    return View(await _context.Brand.ToListAsync());
         //}
-        //*********************************************************
-        
-        // Index After Search
+        //************************************
         public async Task<IActionResult> Index(string searchString)
         {
-            var categories = from c in _context.Category
-                           select c;
+            var brands = from b in _context.Brand
+                         select b;
 
             if (!string.IsNullOrEmpty(searchString))
             {
-               categories = categories.Where(c => c.CategoryName.Contains(searchString)); 
+                brands = brands.Where(s => s.BrandName.Contains(searchString));
             }
-            return View(await categories.ToListAsync());
+            return View(await brands.ToListAsync());
         }
 
-
-
-        // GET: Categories/Details/5
+        // GET: Brands/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -50,45 +45,45 @@ namespace StoreProject.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Category
-                .FirstOrDefaultAsync(m => m.CategoryId == id);
-            if (category == null)
+            var brand = await _context.Brand
+                .FirstOrDefaultAsync(m => m.BrandId == id);
+            if (brand == null)
             {
                 return NotFound();
             }
 
-            return View(category);
+            return View(brand);
         }
 
-        // GET: Categories/Create
+        // GET: Brands/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Categories/Create
+        // POST: Brands/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CategoryId,CategoryName")] Category category)
+        public async Task<IActionResult> Create([Bind("BrandId,BrandName")] Brand brand)
         {
             if (ModelState.IsValid)
             {
-                var nameIsExist = _context.Category.Any(x => x.CategoryName == category.CategoryName);
+                var nameIsExist = _context.Brand.Any(b => b.BrandName == brand.BrandName);
                 if (nameIsExist)
                 {
-                    ModelState.AddModelError("CategoryName", "Cant Creat ,This CategoryName is Already Exists");
-                    return View(category);
+                    ModelState.AddModelError("BrandName", "Cant Create Brand, This Brand Name is Already Exist ");
+                    return View(brand);
                 }
-                _context.Add(category);
+                _context.Add(brand);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(category);
+            return View(brand);
         }
 
-        // GET: Categories/Edit/5
+        // GET: Brands/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -96,44 +91,42 @@ namespace StoreProject.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Category.FindAsync(id);
-            if (category == null)
+            var brand = await _context.Brand.FindAsync(id);
+            if (brand == null)
             {
                 return NotFound();
             }
-            return View(category);
+            return View(brand);
         }
 
-        // POST: Categories/Edit/5
+        // POST: Brands/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CategoryId,CategoryName")] Category category)
+        public async Task<IActionResult> Edit(int id, [Bind("BrandId,BrandName")] Brand brand)
         {
-            if (id != category.CategoryId)
+            if (id != brand.BrandId)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                
                 try
                 {
-                    var nameAlreadyExist = _context.Category.Any(x => x.CategoryName == category.CategoryName);
-                    if (nameAlreadyExist)
+                    var nameIsExist = _context.Brand.Any(b => b.BrandName == brand.BrandName);
+                    if (nameIsExist)
                     {
-                        ModelState.AddModelError("CategoryName", "Cant Update,This Category Name Already Exist ");
-                        return View(category);
+                        ModelState.AddModelError("BrandName", "Cant Update Brand, This Brand Name is Already Exist ");
+                        return View(brand);
                     }
-
-                    _context.Update(category);
+                    _context.Update(brand);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CategoryExists(category.CategoryId))
+                    if (!BrandExists(brand.BrandId))
                     {
                         return NotFound();
                     }
@@ -144,10 +137,10 @@ namespace StoreProject.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(category);
+            return View(brand);
         }
 
-        // GET: Categories/Delete/5
+        // GET: Brands/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -155,30 +148,30 @@ namespace StoreProject.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Category
-                .FirstOrDefaultAsync(m => m.CategoryId == id);
-            if (category == null)
+            var brand = await _context.Brand
+                .FirstOrDefaultAsync(m => m.BrandId == id);
+            if (brand == null)
             {
                 return NotFound();
             }
 
-            return View(category);
+            return View(brand);
         }
 
-        // POST: Categories/Delete/5
+        // POST: Brands/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Category.FindAsync(id);
-            _context.Category.Remove(category);
+            var brand = await _context.Brand.FindAsync(id);
+            _context.Brand.Remove(brand);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CategoryExists(int id)
+        private bool BrandExists(int id)
         {
-            return _context.Category.Any(e => e.CategoryId == id);
+            return _context.Brand.Any(e => e.BrandId == id);
         }
     }
 }

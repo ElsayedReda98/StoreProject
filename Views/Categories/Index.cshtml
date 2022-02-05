@@ -9,13 +9,12 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<form asp-controller="categories" asp-action="Index" method="GET">
+<form asp-controler="Categories" asp-action="Index" method="get">
     <p>
-        Category Name :<input type=terxt name="searchString" />
-        <input type="submit" value="filter" />
+        Category Name : <input type="text" name="SearchString" />
+        <input type="submit" value="Filter" />
     </p>
 </form>
-
 <table class="table">
     <thead>
         <tr>
@@ -32,9 +31,9 @@
                 @Html.DisplayFor(modelItem => item.CategoryName)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.CategoryId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.CategoryId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.CategoryId">Delete</a>
             </td>
         </tr>
 }
