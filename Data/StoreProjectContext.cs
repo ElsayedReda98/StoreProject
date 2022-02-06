@@ -10,12 +10,12 @@ namespace StoreProject.Data
 {
     public class StoreProjectContext : DbContext
     {
-        public StoreProjectContext (DbContextOptions<StoreProjectContext> options)
+        public StoreProjectContext(DbContextOptions<StoreProjectContext> options)
             : base(options)
         {
         }
 
-        
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -104,7 +104,7 @@ namespace StoreProject.Data
 
             modelBuilder.Entity<Store>(builder =>
             {
-                builder.ToTable("store", "sales");
+                builder.ToTable("stores", "sales");
                 builder.Property(o => o.StoreId).HasColumnName("store_id");
                 builder.Property(o => o.StoreName).HasColumnName("store_name");
                 builder.Property(o => o.Phone).HasColumnName("phone");
@@ -112,7 +112,7 @@ namespace StoreProject.Data
                 builder.Property(o => o.Street).HasColumnName("street");
                 builder.Property(o => o.City).HasColumnName("city");
                 builder.Property(o => o.State).HasColumnName("state");
-                builder.Property(o => o.ZipCodde).HasColumnName("zip-code");
+                builder.Property(o => o.ZipCodde).HasColumnName("zip_code");
             });
 
             // pk for orderitem table
@@ -129,6 +129,19 @@ namespace StoreProject.Data
                 builder.Property(o => o.ListPrice).HasColumnName("list_price");
                 builder.Property(o => o.Discount).HasColumnName("discount");
             });
+
+            //pk for stock table
+            modelBuilder.Entity<Stock>()
+                .HasKey(pk => new { pk.StoreId, pk.ProductId });
+
+            modelBuilder.Entity<Stock>(builder =>
+            {
+                builder.ToTable("stocks", "production");
+                builder.Property(s => s.StoreId).HasColumnName("store_id");
+                builder.Property(s => s.ProductId).HasColumnName("product_id");
+                builder.Property(s => s.Quantity).HasColumnName("QUANTITY");
+            });
+
         }
         public DbSet<StoreProject.Models.Category> Category { get; set; }
         public DbSet<StoreProject.Models.Brand> Brand { get; set; }
@@ -137,5 +150,9 @@ namespace StoreProject.Data
         public DbSet<StoreProject.Models.Order> Order { get; set; }
         public DbSet<StoreProject.Models.Staff> Staff { get; set; }
         public DbSet<StoreProject.Models.Store> Store { get; set; }
-    }
+        public DbSet<StoreProject.Models.OrderItem> OrderItem { get; set; }
+        public DbSet<StoreProject.Models.Stock> Stock { get; set; }
+    } 
+
 }
+
