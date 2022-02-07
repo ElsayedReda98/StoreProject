@@ -91,7 +91,8 @@ namespace StoreProject.Controllers
                 return NotFound();
             }
 
-            var brand = await _context.Brand.FindAsync(id);
+            //var brand = await _context.Brand.FindAsync(id);
+            var brand = await _context.Brand.FirstOrDefaultAsync(s => s.BrandId == id);
             if (brand == null)
             {
                 return NotFound();
@@ -116,13 +117,30 @@ namespace StoreProject.Controllers
                 try
                 {
                     var nameIsExist = _context.Brand.Any(b => b.BrandName == brand.BrandName);
+
                     if (nameIsExist)
                     {
-                        ModelState.AddModelError("BrandName", "Cant Update Brand, This Brand Name is Already Exist ");
-                        return View(brand);
+
+                        if (brand.BrandId != id)
+                        {
+                            ModelState.AddModelError("brandname", "cant update brand, this brand name is already exist ");
+                            return View(brand);
+
+                            
+
+                        }
+                        //else if (brand.BrandId == id){
+
+                        //    //_context.Update(brand);
+                        //    //await _context.SaveChangesAsync();
+                        //    // return RedirectToAction(nameof(Index));
+                        //}
+
                     }
                     _context.Update(brand);
                     await _context.SaveChangesAsync();
+                    //return RedirectToAction("Index");
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
