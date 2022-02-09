@@ -21,11 +21,22 @@ namespace StoreProject.Controllers
         }
 
         // GET: Customers
-        public async Task<IActionResult> Index()
+        // before search 
+        //public async Task<IActionResult> Index()
+        //{
+        //    return View(await _context.Customer.ToListAsync());
+        //}
+        //************************************************
+        public async Task<IActionResult> Index(string searchString)
         {
-            return View(await _context.Customer.ToListAsync());
+            var customers = from c in _context.Customer
+                            select c;
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                customers = customers.Where(s => s.FirstName.Contains(searchString));
+            }
+            return View(await customers.ToListAsync());
         }
-
         // GET: Customers/Details/5
         public async Task<IActionResult> Details(int? id)
         {
