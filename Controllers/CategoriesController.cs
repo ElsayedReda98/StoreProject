@@ -121,7 +121,7 @@ namespace StoreProject.Controllers
                 
                 try
                 {
-                    var nameAlreadyExist = _context.Category.Any(x => x.CategoryName == category.CategoryName);
+                    var nameAlreadyExist = _context.Category.Any(x => x.CategoryName == category.CategoryName && x.CategoryId != id);
                     if (nameAlreadyExist)
                     {
                         ModelState.AddModelError("CategoryName", "Cant Update,This Category Name Already Exist ");
