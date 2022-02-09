@@ -116,7 +116,7 @@ namespace StoreProject.Controllers
             {
                 try
                 {
-                    var nameIsExist = _context.Brand.Any(b => b.BrandName == brand.BrandName && brand.BrandId != id );
+                    var nameIsExist = _context.Brand.Any(b => b.BrandName == brand.BrandName & b.BrandId != id );
 
                     if (nameIsExist)
                     {
