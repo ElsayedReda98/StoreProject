@@ -116,30 +116,22 @@ namespace StoreProject.Controllers
             {
                 try
                 {
-                    var nameIsExist = _context.Brand.Any(b => b.BrandName == brand.BrandName);
+                    var nameIsExist = _context.Brand.Any(b => b.BrandName == brand.BrandName && brand.BrandId != id );
 
                     if (nameIsExist)
                     {
 
-                        if (brand.BrandId != id)
-                        {
+                        
                             ModelState.AddModelError("brandname", "cant update brand, this brand name is already exist ");
                             return View(brand);
 
                             
 
-                        }
-                        //else if (brand.BrandId == id){
-
-                        //    //_context.Update(brand);
-                        //    //await _context.SaveChangesAsync();
-                        //    // return RedirectToAction(nameof(Index));
-                        //}
 
                     }
                     _context.Update(brand);
                     await _context.SaveChangesAsync();
-                    //return RedirectToAction("Index");
+                    
 
                 }
                 catch (DbUpdateConcurrencyException)
