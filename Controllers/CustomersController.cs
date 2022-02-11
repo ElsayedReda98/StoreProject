@@ -70,6 +70,19 @@ namespace StoreProject.Controllers
         {
             if (ModelState.IsValid)
             {
+                var fNameExist = _context.Customer.Any(c => c.FirstName == customer.FirstName);
+                var lNameExist = _context.Customer.Any(l => l.LastName == customer.LastName);
+                var emailExist = _context.Customer.Any(l => l.Email == customer.Email);
+                if (fNameExist && emailExist)
+                {
+                    ModelState.AddModelError("FirstName", "Can not create customer, This Customer is Already Exist ");
+                    return View(customer);
+                }
+                else if (lNameExist )
+                {
+                    ModelState.AddModelError("LastName", "Can't create customer, This Customer is Already Exist ");
+                    return View(customer);
+                }
                 _context.Add(customer);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -109,6 +122,19 @@ namespace StoreProject.Controllers
             {
                 try
                 {
+                    var fNameExist = _context.Customer.Any(f => f.FirstName == customer.FirstName && f.CustomerId != id);
+                    var lNameExist = _context.Customer.Any(l => l.LastName == customer.LastName && l.CustomerId != id);
+                    var emailExist = _context.Customer.Any(s => s.Email == customer.Email);
+                    if (fNameExist && emailExist)
+                    {
+                        ModelState.AddModelError("FirstName", "Can't update customer ");
+                        return View(customer);
+                    }
+                    else if (lNameExist )
+                    {
+                        ModelState.AddModelError("LastName", "Can't update customer");
+                        return View(customer);
+                    }
                     _context.Update(customer);
                     await _context.SaveChangesAsync();
                 }

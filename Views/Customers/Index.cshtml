@@ -9,9 +9,9 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<form asp-controller="Customers" asp-action="Index" >
+<form asp-controller="Customers" asp-action="Index" method="get" >
     <p>
-        Customer First Name: <input type="text" name="searchstring" />
+        Customer First Name: <input type="text" name="searchString" />
         <input type="submit" Value="Filter" />
     </p>
 </form>
