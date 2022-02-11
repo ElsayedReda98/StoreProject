@@ -19,11 +19,26 @@ namespace StoreProject.Controllers
         {
             _context = context;
         }
-
+        //******************************************
+        // Index before Search
         // GET: Products
-        public async Task<IActionResult> Index()
+        //public async Task<IActionResult> Index()
+        //{
+        //    return View(await _context.Product.ToListAsync());
+        //}
+        //*******************************************
+
+        // GET : Products
+        public async Task<IActionResult> Index(string searchStrring)
         {
-            return View(await _context.Product.ToListAsync());
+            var products = from p in _context.Product
+                           select p;
+
+            if (!string.IsNullOrEmpty(searchStrring))
+            {
+                products = products.Where(x => x.ProductName.Contains(searchStrring));
+            }
+            return View(await products.ToListAsync());
         }
 
         // GET: Products/Details/5
@@ -57,8 +72,16 @@ namespace StoreProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ProductId,ProductName,BrandId,CategoryId,ModelYear,ListPrice")] Product product)
         {
+
             if (ModelState.IsValid)
             {
+                var productNameExist = _context.Product.Any(p => p.ProductName == product.ProductName);
+                if (productNameExist)
+                {
+                    ModelState.AddModelError("ProductName", "Can't Create Product, This Product Name is Already Exist ");
+                    return View(product);
+                }
+
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -98,6 +121,14 @@ namespace StoreProject.Controllers
             {
                 try
                 {
+                    var productNameExist = _context.Product.Any(p => p.ProductName == product.ProductName && p.ProductId != id);
+                    if (productNameExist)
+                    {
+                        ModelState.AddModelError("ProductName", "cant update Product, This Product name is already exist ");
+                        return View(product);
+                    }
+
+
                     _context.Update(product);
                     await _context.SaveChangesAsync();
                 }
