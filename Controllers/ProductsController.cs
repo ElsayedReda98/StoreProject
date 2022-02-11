@@ -29,14 +29,14 @@ namespace StoreProject.Controllers
         //*******************************************
 
         // GET : Products
-        public async Task<IActionResult> Index(string searchStrring)
+        public async Task<IActionResult> Index(string searchString)
         {
             var products = from p in _context.Product
                            select p;
 
-            if (!string.IsNullOrEmpty(searchStrring))
+            if (!string.IsNullOrEmpty(searchString))
             {
-                products = products.Where(x => x.ProductName.Contains(searchStrring));
+                products = products.Where(x => x.ProductName.Contains(searchString));
             }
             return View(await products.ToListAsync());
         }
