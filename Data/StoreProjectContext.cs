@@ -36,9 +36,12 @@ namespace StoreProject.Data
                 builder.Property(b => b.BrandId).HasColumnName("brand_id");
                 builder.Property(b => b.BrandName).HasColumnName("brand_name");
             });
-
+            //modelBuilder.Entity<Product>()
+            //    .HasKey(pk => pk.ProductId);
+            
             modelBuilder.Entity<Product>(builder =>
             {
+                
                 builder.ToTable("products", "production");
                 builder.Property(p => p.ProductId).HasColumnName("product_id");
                 builder.Property(p => p.ProductName).HasColumnName("product_name");

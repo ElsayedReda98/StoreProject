@@ -22,24 +22,24 @@ namespace StoreProject.Controllers
         //******************************************
         // Index before Search
         // GET: Products
-        //public async Task<IActionResult> Index()
-        //{
-        //    return View(await _context.Product.ToListAsync());
-        //}
+        public async Task<IActionResult> Index()
+        {
+            return View(await _context.Product.ToListAsync());
+        }
         //*******************************************
 
         // GET : Products
-        public async Task<IActionResult> Index(string searchString)
-        {
-            var products = from p in _context.Product
-                           select p;
+        //public async Task<IActionResult> Index(string searchString)
+        //{
+        //    //var products = from p in _context.Product
+        //               select p;
 
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                products = products.Where(x => x.ProductName.Contains(searchString));
-            }
-            return View(await products.ToListAsync());
-        }
+        //if (!string.IsNullOrEmpty(searchString))
+        //{
+        //    products = products.Where(x => x.ProductName.Contains(searchString));
+        //}
+        //return View(await products.ToListAsync());
+        //}
 
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -60,9 +60,31 @@ namespace StoreProject.Controllers
         }
 
         // GET: Products/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            // use linq
+            IQueryable<int> bQuery = from b in _context.Product
+                                     orderby b.BrandId
+                                     select b.BrandId;
+
+            IQueryable<int> cQuery = from c in _context.Product
+                                     orderby c.CategoryId 
+                                     select c.CategoryId;
+
+
+            var products = from p in _context.Product
+                         select p;
+
+            var productVM = new ProductViewModel
+            {
+                Brands = new SelectList(await bQuery.Distinct().ToListAsync()),
+                Categories = new SelectList(await cQuery.Distinct().ToListAsync()),
+                Products = await products.ToListAsync()
+            };
+
+            
+
+            return View(productVM);
         }
 
         // POST: Products/Create

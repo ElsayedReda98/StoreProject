@@ -1,4 +1,5 @@
-﻿@model StoreProject.Models.Product
+﻿@*@model StoreProject.Models.Product*@
+@model StoreProject.Models.ProductViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -19,14 +20,20 @@
             </div>
             <div class="form-group">
                 <label asp-for="BrandId" class="control-label"></label>
-                <input asp-for="BrandId" class="form-control" />
+                <select asp-for="BrandId" class="form-control" asp-items="Model.Brands">
+                 </select>
                 <span asp-validation-for="BrandId" class="text-danger"></span>
             </div>
+            </select>
+            
             <div class="form-group">
                 <label asp-for="CategoryId" class="control-label"></label>
-                <input asp-for="CategoryId" class="form-control" />
+                <select asp-for="CategoryId" class="form-control" asp-items="Model.Categories">
+
+                </select>
                 <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
+           
             <div class="form-group">
                 <label asp-for="ModelYear" class="control-label"></label>
                 <input asp-for="ModelYear" class="form-control" />
