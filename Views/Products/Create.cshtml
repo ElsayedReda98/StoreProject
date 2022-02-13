@@ -29,14 +29,15 @@
             <div class="form-group">
                 <label asp-for="CategoryId" class="control-label"></label>
                 <select asp-for="CategoryId" class="form-control" asp-items="Model.Categories">
-
                 </select>
                 <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
            
             <div class="form-group">
                 <label asp-for="ModelYear" class="control-label"></label>
-                <input asp-for="ModelYear" class="form-control" />
+                <select asp-for="ModelYear" class="form-control" asp-items="Model.MYears" >
+
+                </select>
                 <span asp-validation-for="ModelYear" class="text-danger"></span>
             </div>
             <div class="form-group">

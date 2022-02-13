@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StoreProject.Data;
 using StoreProject.Models;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace StoreProject.Controllers
 {
@@ -66,19 +67,26 @@ namespace StoreProject.Controllers
             IQueryable<int> bQuery = from b in _context.Product
                                      orderby b.BrandId
                                      select b.BrandId;
+                                    
+                                                                                                   ;
 
             IQueryable<int> cQuery = from c in _context.Product
-                                     orderby c.CategoryId 
+                                     orderby c.CategoryId
                                      select c.CategoryId;
+
+            IQueryable<short> yQuery = from y in _context.Product
+                                        orderby y.ModelYear
+                                        select y.ModelYear;
 
 
             var products = from p in _context.Product
-                         select p;
+                           select p;
 
             var productVM = new ProductViewModel
             {
                 Brands = new SelectList(await bQuery.Distinct().ToListAsync()),
-                Categories = new SelectList(await cQuery.Distinct().ToListAsync()),
+                Categories = new SelectList(await bQuery.Distinct().ToListAsync()),
+                MYears =  new SelectList(await yQuery.Distinct().ToListAsync()),
                 Products = await products.ToListAsync()
             };
 
