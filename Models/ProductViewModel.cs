@@ -9,8 +9,8 @@ namespace StoreProject.Models
         public SelectList Categories { get; set; }
         public SelectList MYears { get; set; }
         public string? ProductName { get; set; }
-        public int BrandId { get; set; }
-        public int CategoryId { get; set; }
+        public string BrandName { get; set; }
+        public int CategoryName { get; set; }
         public short ModelYear { get; set; }
         public decimal ListPrice { get; set; }
 

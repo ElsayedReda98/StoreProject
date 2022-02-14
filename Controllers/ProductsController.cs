@@ -64,17 +64,17 @@ namespace StoreProject.Controllers
         public async Task<IActionResult> Create()
         {
             // use linq
-            IQueryable<int> bQuery = from b in _context.Product
-                                     orderby b.BrandId
-                                     select b.BrandId;
+            IQueryable<string> selectBrandName = from b in _context.Brand
+                                     orderby b.BrandName
+                                     select b.BrandName;
                                     
                                                                                                    ;
 
-            IQueryable<int> cQuery = from c in _context.Product
-                                     orderby c.CategoryId
-                                     select c.CategoryId;
+            IQueryable<string> selectCategoryName = from c in _context.Category
+                                     orderby c.CategoryName
+                                     select c.CategoryName;
 
-            IQueryable<short> yQuery = from y in _context.Product
+            IQueryable<short> selectModelYear = from y in _context.Product
                                         orderby y.ModelYear
                                         select y.ModelYear;
 
@@ -84,9 +84,9 @@ namespace StoreProject.Controllers
 
             var productVM = new ProductViewModel
             {
-                Brands = new SelectList(await bQuery.Distinct().ToListAsync()),
-                Categories = new SelectList(await bQuery.Distinct().ToListAsync()),
-                MYears =  new SelectList(await yQuery.Distinct().ToListAsync()),
+                Brands = new SelectList(await selectBrandName.Distinct().ToListAsync()),
+                Categories = new SelectList(await selectCategoryName.Distinct().ToListAsync()),
+                MYears =  new SelectList(await selectModelYear.Distinct().ToListAsync()),
                 Products = await products.ToListAsync()
             };
 
