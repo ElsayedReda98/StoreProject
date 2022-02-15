@@ -63,36 +63,20 @@ namespace StoreProject.Controllers
         // GET: Products/Create
         public async Task<IActionResult> Create()
         {
-            // use linq
-            IQueryable<string> selectBrandName = from b in _context.Brand
-                                     orderby b.BrandName
-                                     select b.BrandName;
-                                    
-                                                                                                   ;
 
-            IQueryable<string> selectCategoryName = from c in _context.Category
-                                     orderby c.CategoryName
-                                     select c.CategoryName;
-
-            IQueryable<short> selectModelYear = from y in _context.Product
-                                        orderby y.ModelYear
-                                        select y.ModelYear;
-
-
-            var products = from p in _context.Product
-                           select p;
-
-            var productVM = new ProductViewModel
+            var bM = new ProductViewModel();
+            bM.BrandName = "5";
+            bM.Brands = new List<SelectListItem>
             {
-                Brands = new SelectList(await selectBrandName.Distinct().ToListAsync()),
-                Categories = new SelectList(await selectCategoryName.Distinct().ToListAsync()),
-                MYears =  new SelectList(await selectModelYear.Distinct().ToListAsync()),
-                Products = await products.ToListAsync()
+                new SelectListItem { Text = "brand1", Value = "1"},
+                new SelectListItem { Text = "brand2", Value = "2"},
+                new SelectListItem { Text = "brand3", Value = "3"},
+                new SelectListItem { Text = "brand4", Value = "4"},
+                new SelectListItem { Text = "brand5", Value = "5"},
             };
 
-            
 
-            return View(productVM);
+            return View(bM);
         }
 
         // POST: Products/Create

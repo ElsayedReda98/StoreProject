@@ -1,0 +1,43 @@
+﻿@using static StoreProject.Models.CountryViewModelGroup
+@model CountryViewModel
+@{
+    ViewData["Title"] = "Country Home Page";
+}
+<p>
+    <form asp-controller="Country" asp-action="Index" method="post">
+        <select asp-for="CountryCodes" 
+        asp-items="Model.Countries">
+
+        </select>
+
+        <br /><button type="Submit">Register</button>
+        <textarea asp-for="Description">
+
+        </textarea>
+        <label asp-for="Email"></label>
+        <input asp-for="Email" /><br />
+    </form>
+    
+</p>
+<h2 class="text-center"> Country view Model </h2>
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+<form method="post">
+    <button asp-controller="Country" asp-action="Index">Click Me</button>
+    <input type="image" src="..." alt="or click me"
+    asp-controller="Country" asp-action="Index"/>
+</form>
+<form asp-controller="Country" asp-action="Index" method="post">
+    Email: <input asp-for="Email" /><br />
+    Password : <input asp-for="Password" /><br />
+    <button type="Submit" >Register</button>
+
+</form>
+<br />
+<hr />
+<form method="post">
+    <input asp-for="@Model.IsCkecked" />
+    <button type="submit">Submit</button>
+</form>
