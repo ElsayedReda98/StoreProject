@@ -23,24 +23,25 @@ namespace StoreProject.Controllers
         //******************************************
         // Index before Search
         // GET: Products
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Product.ToListAsync());
-        }
+        //public async Task<IActionResult> Index()
+        //{
+        //    return View(await _context.Product.ToListAsync());
+        //}
+
         //*******************************************
 
-        // GET : Products
-        //public async Task<IActionResult> Index(string searchString)
-        //{
-        //    //var products = from p in _context.Product
-        //               select p;
+        //GET : Products
+        public async Task<IActionResult> Index(string searchString)
+        {
+            var products = from p in _context.Product
+                           select p;
 
-        //if (!string.IsNullOrEmpty(searchString))
-        //{
-        //    products = products.Where(x => x.ProductName.Contains(searchString));
-        //}
-        //return View(await products.ToListAsync());
-        //}
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                products = products.Where(x => x.ProductName.Contains(searchString));
+            }
+            return View(await products.ToListAsync());
+        }
 
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -63,20 +64,74 @@ namespace StoreProject.Controllers
         // GET: Products/Create
         public async Task<IActionResult> Create()
         {
+            //var brands = await _context.Brand.ToListAsync();
+            
+            //or
+            //var brands =  from b in _context.Brand
+            //                   select new { b.BrandId, b.BrandName };
+            
+            //var categories = await _context.Category.ToListAsync();
 
-            var bM = new ProductViewModel();
-            bM.BrandName = "5";
-            bM.Brands = new List<SelectListItem>
-            {
-                new SelectListItem { Text = "brand1", Value = "1"},
-                new SelectListItem { Text = "brand2", Value = "2"},
-                new SelectListItem { Text = "brand3", Value = "3"},
-                new SelectListItem { Text = "brand4", Value = "4"},
-                new SelectListItem { Text = "brand5", Value = "5"},
-            };
+            //or
+            //var categories = from c in _context.Category
+            //                 select new {c.CategoryId,c.CategoryName};
+
+            //var modelYears = await _context.Product.ToListAsync();
+
+            //or
+            //var modelyears = from y in _context.Product
+            //                 select y.ModelYear;
+
+            //or
+            //IQueryable<short> modelYears = from y in _context.Product
+            //                       select y.ModelYear;
+
+            var productVM = new ProductViewModel();
+            //{
+            //Brands = new SelectList(brands, "BrandId", "BrandName"),
+
+            //Categories = new SelectList(categories,"CategoryId","CategoryName"),
+
+            ///MYears = new SelectList(modelYears,"ModelYear","ModelYear",2017)
+
+            //or
+            //Brands = new SelectList(brands.Select(c => new SelectListItem( c.BrandName,c.BrandId.ToString()))),
+
+            //or
 
 
-            return View(bM);
+            //Brands = brands.Select(b => new SelectListItem(b.BrandName, b.BrandId.ToString())),
+
+
+            //Categories = categories.Select(c => new SelectListItem(c.CategoryName, c.CategoryId.ToString())),
+
+            //MYears = modelYears.Select(y => new SelectListItem(y.ModelYear.ToString(), y.ModelYear.ToString())) 
+            //};
+            productVM.Brands =await _context.Brand.Select
+                (a => new SelectListItem()
+                {
+                    Text = a.BrandName,
+                    Value = a.BrandId.ToString()
+                }).ToListAsync();
+
+            productVM.Categories = await _context.Category.Select
+                (c => new SelectListItem(c.CategoryName,c.CategoryId.ToString())).ToListAsync();
+
+            productVM.MYears = await _context.Product.Select
+                (y => new SelectListItem()
+                {
+                    Text = y.ModelYear.ToString(),
+                    Value = y.ModelYear.ToString()
+                }).Distinct().ToListAsync();
+
+            productVM.BrandId = 281;
+
+            productVM.CategoryId = 26;
+
+            productVM.ModelYear = 2018;
+           
+
+            return View(productVM);
         }
 
         // POST: Products/Create
