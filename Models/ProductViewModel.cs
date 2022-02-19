@@ -6,9 +6,9 @@ namespace StoreProject.Models
     public class ProductViewModel
     {
 
-       
+        public int ProductId { get; set; }
         public string BrandName { get; set; }
-        public IEnumerable<SelectListItem> Brands { get; set; }
+        public IEnumerable<SelectListItem>? Brands { get; set; }
 
         public string CategoryName { get; set; }
         public IEnumerable<SelectListItem> Categories { get; set; }

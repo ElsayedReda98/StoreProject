@@ -142,13 +142,30 @@ namespace StoreProject.Controllers
         public async Task<IActionResult> Create([Bind("ProductId,ProductName,BrandId,CategoryId,ModelYear,ListPrice")] Product product)
         {
 
+            var productVM = new ProductViewModel();
+            productVM.Brands = await _context.Brand.Select
+                (a => new SelectListItem()
+                {
+                    Text = a.BrandName,
+                    Value = a.BrandId.ToString()
+                }).ToListAsync();
+
+            productVM.Categories = await _context.Category.Select
+                (c => new SelectListItem(c.CategoryName, c.CategoryId.ToString())).ToListAsync();
+
+            productVM.MYears = await _context.Product.Select
+                (y => new SelectListItem()
+                {
+                    Text = y.ModelYear.ToString(),
+                    Value = y.ModelYear.ToString()
+                }).Distinct().ToListAsync();
             if (ModelState.IsValid)
             {
                 var productNameExist = _context.Product.Any(p => p.ProductName == product.ProductName);
                 if (productNameExist)
                 {
                     ModelState.AddModelError("ProductName", "Can't Create Product, This Product Name is Already Exist ");
-                    return View(product);
+                    return View(productVM);
                 }
 
                 _context.Add(product);
