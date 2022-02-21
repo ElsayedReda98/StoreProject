@@ -18,29 +18,74 @@ namespace StoreProject.Controllers
 
         public ProductsController(StoreProjectContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
-        //******************************************
-        // Index before Search
-        // GET: Products
-        //public async Task<IActionResult> Index()
-        //{
-        //    return View(await _context.Product.ToListAsync());
-        //}
-
-        //*******************************************
-
+        
         //GET : Products
-        public async Task<IActionResult> Index(string searchString)
+        public async Task<IActionResult> Index(string selectedBrand,string selectedCategory, short modelYear,
+            string searchString,string currentFilter, int? pageNumber)
         {
+
+            //use Linq to get list of Brands
+            var brandQuery = from b in _context.Brand
+                             select b;
+
+            var catecgoryQuery = from c in _context.Category
+                                 select c;
+
             var products = from p in _context.Product
                            select p;
+            
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                products = products.Where(x => x.ProductName.Contains(searchString));
+                products = products.Where(s => s.ProductName!.Contains(searchString));
             }
-            return View(await products.ToListAsync());
+            if (!string.IsNullOrEmpty(selectedBrand))
+            {
+                products = products.Where(x => x.BrandId.ToString() == selectedBrand);
+            }
+
+            if (!string.IsNullOrEmpty(selectedCategory))
+            {
+                products = products.Where(x => x.CategoryId.ToString() == selectedCategory);
+            }
+
+            if (!string.IsNullOrEmpty(modelYear.ToString()))
+            {
+                products = products.Where(x => x.ModelYear.ToString() == modelYear.ToString());
+            }
+
+            var productVM = new ProductViewModel
+            {
+                Brands = await _context.Brand.Select
+                (a => new SelectListItem()
+                {
+                    Text = a.BrandName,
+                    Value = a.BrandId.ToString()
+                }).ToListAsync(),
+
+                Categories = await _context.Category.Select
+                (c => new SelectListItem(c.CategoryName, c.CategoryId.ToString())).ToListAsync(),
+
+                MYears = await _context.Product.Select
+                (y => new SelectListItem()
+                {
+                    Text = y.ModelYear.ToString(),
+                    Value = y.ModelYear.ToString()
+                }).Distinct().ToListAsync(),
+
+            Products =await _context.Product.ToListAsync()
+        };
+            return View(productVM);
+
+            //*********************************************
+
+            //***********************************************************
+            //int pageSize = 3;
+            //var result = await PaginatedList<Product>.CreateAsync(products.AsNoTracking(), pageNumber ?? 1, pageSize);
+            //return View(await PaginatedList<Product>.CreateAsync(products.AsNoTracking(),pageNumber ?? 1,pageSize));
+
         }
 
         // GET: Products/Details/5
@@ -48,7 +93,8 @@ namespace StoreProject.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                //return NotFound();
+                return BadRequest();
             }
 
             var product = await _context.Product
@@ -64,58 +110,19 @@ namespace StoreProject.Controllers
         // GET: Products/Create
         public async Task<IActionResult> Create()
         {
-            //var brands = await _context.Brand.ToListAsync();
             
-            //or
-            //var brands =  from b in _context.Brand
-            //                   select new { b.BrandId, b.BrandName };
-            
-            //var categories = await _context.Category.ToListAsync();
-
-            //or
-            //var categories = from c in _context.Category
-            //                 select new {c.CategoryId,c.CategoryName};
-
-            //var modelYears = await _context.Product.ToListAsync();
-
-            //or
-            //var modelyears = from y in _context.Product
-            //                 select y.ModelYear;
-
-            //or
-            //IQueryable<short> modelYears = from y in _context.Product
-            //                       select y.ModelYear;
-
+            //***************************************************************
+            //or of all    
             var productVM = new ProductViewModel();
-            //{
-            //Brands = new SelectList(brands, "BrandId", "BrandName"),
-
-            //Categories = new SelectList(categories,"CategoryId","CategoryName"),
-
-            ///MYears = new SelectList(modelYears,"ModelYear","ModelYear",2017)
-
-            //or
-            //Brands = new SelectList(brands.Select(c => new SelectListItem( c.BrandName,c.BrandId.ToString()))),
-
-            //or
-
-
-            //Brands = brands.Select(b => new SelectListItem(b.BrandName, b.BrandId.ToString())),
-
-
-            //Categories = categories.Select(c => new SelectListItem(c.CategoryName, c.CategoryId.ToString())),
-
-            //MYears = modelYears.Select(y => new SelectListItem(y.ModelYear.ToString(), y.ModelYear.ToString())) 
-            //};
-            productVM.Brands =await _context.Brand.Select
-                (a => new SelectListItem()
-                {
-                    Text = a.BrandName,
-                    Value = a.BrandId.ToString()
-                }).ToListAsync();
+            productVM.Brands = await _context.Brand.Select
+            (a => new SelectListItem()
+            {
+                Text = a.BrandName,
+                Value = a.BrandId.ToString()
+            }).ToListAsync();
 
             productVM.Categories = await _context.Category.Select
-                (c => new SelectListItem(c.CategoryName,c.CategoryId.ToString())).ToListAsync();
+                (c => new SelectListItem(c.CategoryName, c.CategoryId.ToString())).ToListAsync();
 
             productVM.MYears = await _context.Product.Select
                 (y => new SelectListItem()
@@ -124,12 +131,12 @@ namespace StoreProject.Controllers
                     Value = y.ModelYear.ToString()
                 }).Distinct().ToListAsync();
 
-            productVM.BrandId = 281;
+            //productVM.BrandId = 281;
 
-            productVM.CategoryId = 26;
+            //productVM.CategoryId = 26;
 
-            productVM.ModelYear = 2018;
-           
+            productVM.ModelYear = 2022;
+
 
             return View(productVM);
         }
@@ -178,16 +185,36 @@ namespace StoreProject.Controllers
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            //var productVM = new ProductViewModel();
+            //productVM.Brands = await _context.Brand.Select
+            //    (a => new SelectListItem()
+            //    {
+            //        Text = a.BrandName,
+            //        Value = a.BrandId.ToString()
+            //    }).ToListAsync();
+
+            //productVM.Categories = await _context.Category.Select
+            //    (c => new SelectListItem(c.CategoryName, c.CategoryId.ToString())).ToListAsync();
+
+            //productVM.MYears = await _context.Product.Select
+            //    (y => new SelectListItem()
+            //    {
+            //        Text = y.ModelYear.ToString(),
+            //        Value = y.ModelYear.ToString()
+            //    }).Distinct().ToListAsync();
+            
             if (id == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            var product = await _context.Product.FindAsync(id);
+             var product = await _context.Product.FindAsync(id);
+            
             if (product == null)
             {
-                return NotFound();
+                return BadRequest();
             }
+            
             return View(product);
         }
 
@@ -239,7 +266,7 @@ namespace StoreProject.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             var product = await _context.Product

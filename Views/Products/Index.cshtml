@@ -1,4 +1,4 @@
-﻿@model IEnumerable<StoreProject.Models.Product>
+﻿@model StoreProject.Models.ProductViewModel
 
 @{
     ViewData["Title"] = "Index";
@@ -12,7 +12,22 @@
 <form asp-controller="Products" asp-action="Index" method="GET">
     <p>
         Product Name : <input type="text" name="SearchString" />
-        <input type="submit" value="Filter" />
+        
+        Brand Name: 
+        <select asp-for="SelectedBrand" asp-items="Model.Brands"> 
+                    <option value="">All</option>
+                  </select>
+        Category Name : 
+        <select asp-for="SelectedCategory" asp-items="Model.Categories">
+            <option value="">All</option>
+        </select>
+        Model Year :
+        <select asp-for="ModelYear" asp-items="Model.MYears">
+            <option value="">All</option>
+        </select>
+
+        <input type="submit" value="Filter" /> 
+            
     </p>
 </form>
 <table class="table">
@@ -37,7 +52,7 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Products) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.ProductName)
