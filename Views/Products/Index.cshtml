@@ -1,4 +1,4 @@
-﻿@model StoreProject.Models.ProductViewModel
+﻿@model StoreProject.ViewModels.ProductListViewModel
 
 @{
     ViewData["Title"] = "Index";
@@ -9,9 +9,9 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<form asp-controller="Products" asp-action="Index" method="GET">
+<form asp-controller="Products" asp-action="Index" method="Get">
     <p>
-        Product Name : <input type="text" name="SearchString" />
+        Product Name : <input asp-for="SearchString" />
         
         Brand Name: 
         <select asp-for="SelectedBrand" asp-items="Model.Brands"> 
@@ -22,7 +22,7 @@
             <option value="">All</option>
         </select>
         Model Year :
-        <select asp-for="ModelYear" asp-items="Model.MYears">
+        <select asp-for="SelectedYear" asp-items="Model.ModelYears">
             <option value="">All</option>
         </select>
 
@@ -34,19 +34,19 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.ProductName)
+                @Html.DisplayNameFor(model => model.Products[0].ProductName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.BrandId)
+                @Html.DisplayNameFor(model => model.Products[0].BrandId)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CategoryId)
+                @Html.DisplayNameFor(model => model.Products[0].CategoryId)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ModelYear)
+                @Html.DisplayNameFor(model => model.Products[0].ModelYear)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ListPrice)
+                @Html.DisplayNameFor(model => model.Products[0].ListPrice)
             </th>
             <th></th>
         </tr>

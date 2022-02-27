@@ -5,9 +5,7 @@ namespace StoreProject.Models
 {
     public class Product
     {
-        [Display(Name ="Product Id")]
-        public int ProductId { get; set; }
-        
+        public int ProductId { get; set; } 
         [Display(Name ="Product Name")]
         public string ProductName { get; set; }
         [Display(Name ="Brand Id")]
@@ -16,10 +14,8 @@ namespace StoreProject.Models
         public int CategoryId { get; set; }
         [Display(Name ="Model Year")]
         public short ModelYear { get; set; }
-        
         [Display(Name ="List Price")]
-        
-        [Column(TypeName ="decimal(18,2)")]
+        [Range(1,1000)]
         public decimal ListPrice { get; set; }
 
     }
