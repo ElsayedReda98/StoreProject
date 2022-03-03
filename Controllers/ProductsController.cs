@@ -23,8 +23,23 @@ namespace StoreProject.Controllers
         }
         
         //GET : Products
-        public async Task<IActionResult> Index(ProductListViewModel productListViewModel)
+        public async Task<IActionResult> Index(
+            ProductListViewModel productListViewModel)
         {
+            ViewData["CurrentSort"] = productListViewModel.SortOrder;
+            ViewData["NameSortParm"] = string.IsNullOrEmpty(productListViewModel.SortOrder) ? "name_desc" : "";
+
+
+            if (productListViewModel.SearchString != null)
+            {
+                productListViewModel.PageNumber = 1;
+            }
+            else
+            {
+                productListViewModel.SearchString = productListViewModel.CurrentFilter;
+            }
+
+            ViewData["CurrentFilter"] = productListViewModel.SearchString;
 
             //use Linq to get list of Brands
             var brandQuery = from b in _context.Brand
@@ -33,11 +48,14 @@ namespace StoreProject.Controllers
             var catecgoryQuery = from c in _context.Category
                                  select c;
 
-            var products = from p in _context.Product
-                           select p;
-            
+            IQueryable<Product> products = _context.Product
+                            .Include(s => s.Brand)
+                            .Include(c => c.Category);
 
-            if (!string.IsNullOrEmpty(productListViewModel.SearchString))
+            //var products =from s in _context.Product
+              //             select s;
+
+            if (!string.IsNullOrEmpty(productListViewModel. SearchString))
             {
                 products = products.Where(s => s.ProductName.Contains(productListViewModel.SearchString));
             }
@@ -54,6 +72,16 @@ namespace StoreProject.Controllers
             if (productListViewModel.SelectedYear > 0 )
             {
                 products = products.Where(z => z.ModelYear == productListViewModel.SelectedYear);
+            }
+
+            switch (productListViewModel.SortOrder)
+            {
+                case "name_desc":
+                    products = products.OrderByDescending(s => s.ProductName);
+                    break;
+                default:
+                    products = products.OrderBy(s => s.ProductName);
+                    break;
             }
 
             productListViewModel.Brands = await _context.Brand.Select
@@ -74,8 +102,13 @@ namespace StoreProject.Controllers
                     }).Distinct().ToListAsync();
 
             productListViewModel.Products = await products.ToListAsync();
-        
-            return View(productListViewModel);
+
+            
+
+            int pageSize = 10;
+            return View(await PaginatedList<Product>.CreateAsync(products.AsNoTracking(),
+                productListViewModel.PageNumber ?? 1, pageSize));
+            //return View(productListViewModel);
 
         }
 

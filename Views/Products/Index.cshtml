@@ -1,4 +1,7 @@
-﻿@model StoreProject.ViewModels.ProductListViewModel
+﻿
+@*@model StoreProject.ViewModels.ProductListViewModel*@
+@*@model PaginatedList<StoreProject.ViewModels.ProductListViewModel>*@
+@model PaginatedList<StoreProject.Models.Product>
 
 @{
     ViewData["Title"] = "Index";
@@ -10,7 +13,7 @@
     <a asp-action="Create">Create New</a>
 </p>
 <form asp-controller="Products" asp-action="Index" method="Get">
-    <p>
+   @* <p>
         Product Name : <input asp-for="SearchString" />
         
         Brand Name: 
@@ -28,31 +31,39 @@
 
         <input type="submit" value="Filter" /> 
             
-    </p>
+    </p>*@
 </form>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Products[0].ProductName)
+                @*@Html.DisplayNameFor(model => model.Products[0].ProductName)*@
+                <a asp-action="Index" asp-route-SortOrder="@ViewData["NameSortParm"]"
+                    asp-route-CurrentFilter="@ViewData["CurrentFilter"]">
+                Product Name
+                </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Products[0].BrandId)
+                @*@Html.DisplayNameFor(model => model.Products[0].BrandId)*@
+                Brand
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Products[0].CategoryId)
+                @*@Html.DisplayNameFor(model => model.Products[0].CategoryId)*@
+                Category
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Products[0].ModelYear)
+                @*@Html.DisplayNameFor(model => model.Products[0].ModelYear)*@
+                Model Year
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Products[0].ListPrice)
+                @*@Html.DisplayNameFor(model => model.Products[0].ListPrice)*@
+                List Price
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Products) {
+@foreach (var item in Model) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.ProductName)
@@ -78,3 +89,21 @@
 }
     </tbody>
 </table>
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-PageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+Previous
+</a>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-PageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+Next
+</a>
