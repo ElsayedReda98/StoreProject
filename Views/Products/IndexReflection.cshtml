@@ -1,0 +1,85 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model ReflectionIT.Mvc.Paging.PagingList<StoreProject.Models.Product>
+@using ReflectionIT.Mvc.Paging
+@addTagHelper *, ReflectionIT.Mvc..Paging
+
+@{
+    ViewData["Title"] = "IndexReflection";
+}
+<h1>Index Reflection</h1>
+
+<p>
+    <a asp-action="Create">Create New Product</a>
+</p>
+
+<div class="container">
+<nav aria-label="pagination justify-content-end">
+    @await this.Component.InvokeAsync("Pager", new {PagingList = this.Model })
+</nav>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Products[0].ProductName)*@
+                @*<a asp-action="Index" asp-route-SortOrder="@ViewData["NameSortParm"]"
+                    asp-route-CurrentFilter="@ViewData["CurrentFilter"]">
+                    </a>*@
+                    Product Name
+
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Products[0].BrandId)*@
+                Brand
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Products[0].CategoryId)*@
+                Category
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Products[0].ModelYear)*@
+                Model Year
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Products[0].ListPrice)*@
+                List Price
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BrandId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CategoryId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ModelYear)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ListPrice)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="container"> 
+<nav aria-label="pagination justify-content-end" >
+    <vc:pager paging-list="@Model" />    
+</nav>
+</div>

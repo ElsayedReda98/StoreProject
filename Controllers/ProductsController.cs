@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using ReflectionIT.Mvc.Paging;
 using StoreProject.Data;
 using StoreProject.Models;
 using StoreProject.ViewModels;
@@ -45,13 +46,13 @@ namespace StoreProject.Controllers
 
         }
         //*****************************
-        // paging 
-        //public async Task<IActionResult> Index(int page = 1)
-        //{
-        //    var qurey = _context.Product.AsNoTracking().OrderBy(p => p.ProductName);
-        //    var model = await PaginatedList<Product>.CreateAsync(qurey, 10, page);
-        //    return View(model);
-        //}
+        // paging using ReflectionIT
+        public async Task<IActionResult> IndexReflection(int page = 1)
+        {
+            var qurey = _context.Product.AsNoTracking().OrderBy(p => p.ProductId);
+            var model = await PagingList.CreateAsync(qurey, 8, page);
+            return View(model);
+        }
 
         //public IActionResult IndexGet()
         //{
@@ -75,14 +76,14 @@ namespace StoreProject.Controllers
         //                                                .Skip((currentPage - 1) * maxRows)
         //                                                .Take(maxRows).ToList();
         //    double pageCount = (double)(decimal)(this._context.Product.Count() / Convert.ToDecimal(maxRows));
-            
+
         //    productListViewModel.PageCount = (int)Math.Ceiling(pageCount);
 
         //    productListViewModel.CurrentPageIndex = currentPage;
 
         //    return productListViewModel;
-        
-        
+
+
         //}
 
         //GET : Products
