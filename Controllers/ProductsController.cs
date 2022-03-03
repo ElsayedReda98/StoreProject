@@ -21,13 +21,70 @@ namespace StoreProject.Controllers
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
-        
-        public async Task<IActionResult> Index(int page = 1)
+        public IActionResult Index(int pg = 1)
         {
-            var qurey = _context.Product.AsNoTracking().OrderBy(p => p.ProductName);
-            var model = await PaginatedList<Product>.CreateAsync(qurey, 10, page);
-            return View(model);
+            List<Product> products = _context.Product.ToList();
+
+            const int pageSize = 10;
+            if (pg < 1)
+            {
+                pg = 1;
+            }
+
+            int rescCount = products.Count();
+            
+            var pager = new Pager(rescCount, pg, pageSize);
+
+            int recSkip = (pg - 1) * pageSize;
+
+            var data = products.Skip(recSkip).Take(pager.PageSize).ToList();
+
+            this.ViewBag.pager = pager;
+
+            return View(data);
+
         }
+        //*****************************
+        // paging 
+        //public async Task<IActionResult> Index(int page = 1)
+        //{
+        //    var qurey = _context.Product.AsNoTracking().OrderBy(p => p.ProductName);
+        //    var model = await PaginatedList<Product>.CreateAsync(qurey, 10, page);
+        //    return View(model);
+        //}
+
+        //public IActionResult IndexGet()
+        //{
+        //    return View(this.GetProducts(1));
+        //}
+
+        //[HttpPost]
+        //public IActionResult IndexPost(int currentPageIndex)
+        //{
+        //    return View();
+        //}
+
+        //private ProductListViewModel GetProducts(int currentPage)
+        //{
+        //    int maxRows = 10;
+        //    ProductListViewModel productListViewModel = new ProductListViewModel();
+
+        //    productListViewModel.Products = (from m in this._context.Product
+        //                                                     select m)
+        //                                                .OrderBy(m => m.ProductId)
+        //                                                .Skip((currentPage - 1) * maxRows)
+        //                                                .Take(maxRows).ToList();
+        //    double pageCount = (double)(decimal)(this._context.Product.Count() / Convert.ToDecimal(maxRows));
+            
+        //    productListViewModel.PageCount = (int)Math.Ceiling(pageCount);
+
+        //    productListViewModel.CurrentPageIndex = currentPage;
+
+        //    return productListViewModel;
+        
+        
+        //}
+
         //GET : Products
         public async Task<IActionResult> IndexFirst(
             ProductListViewModel productListViewModel)

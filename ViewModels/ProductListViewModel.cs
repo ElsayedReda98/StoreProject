@@ -23,6 +23,11 @@ namespace StoreProject.ViewModels
         public IEnumerable<SelectListItem> ModelYears { get; set; }
 
         //*******************************************************
+
+        public int CurrentPageIndex { get; set; }
+        public int PageCount { get; set; }
+
+
     }
 
 }
