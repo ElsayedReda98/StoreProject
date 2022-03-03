@@ -22,8 +22,14 @@ namespace StoreProject.Controllers
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
         
+        public async Task<IActionResult> Index(int page = 1)
+        {
+            var qurey = _context.Product.AsNoTracking().OrderBy(p => p.ProductName);
+            var model = await PaginatedList<Product>.CreateAsync(qurey, 10, page);
+            return View(model);
+        }
         //GET : Products
-        public async Task<IActionResult> Index(
+        public async Task<IActionResult> IndexFirst(
             ProductListViewModel productListViewModel)
         {
             ViewData["CurrentSort"] = productListViewModel.SortOrder;

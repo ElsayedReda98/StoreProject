@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using ReflectionIT.Mvc.Paging;
 using StoreProject.Data;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,11 @@ builder.Services.AddDbContext<StoreProjectContext>(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// added
+builder.Services.AddMvc();
+//added
+builder.Services.AddPaging();
 
 var app = builder.Build();
 
