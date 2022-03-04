@@ -1,198 +1,80 @@
-﻿
-@*@model StoreProject.ViewModels.ProductListViewModel*@
+﻿@*@model StoreProject.ViewModels.ProductListViewModel*@
 @*@model PaginatedList<StoreProject.ViewModels.ProductListViewModel>*@
 @*@model PaginatedList<StoreProject.Models.Product>*@
 @**@    
-@*
-    @model ReflectionIT.Mvc.Paging.PagingList<StoreProject.Models.Product>
-    @using ReflectionIT.Mvc.Paging
-    @addTagHelper *, ReflectionIT.Mvc.Paging
+@*@model IEnumerable<StoreProject.Models.Product>*@
+
+@*@model ReflectionIT.Mvc.Paging.PagingList<StoreProject.Models.Product>
+@using ReflectionIT.Mvc.Paging
+@addTagHelper *, ReflectionIT.Mvc.Paging
 *@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@*@using Paging_EF
+@using StoreProject.ViewModels;
 
-    @model ProductListViewModel
-*@
-@model IEnumerable<StoreProject.Models.Product>
-
+@model StoreProject.ViewModels.ProductListViewModel
 
 @{
-    ViewData["Title"] = "Index";
-
-    Pager pager = new Pager();
-
-    int pageNo = 0;
-    if (ViewBag.Pager != null)
-    {
-        pager = ViewBag.Pager;
-        pageNo = pager.CurrentPage;
-    }
-
-
-
+    Layout = null;
 }
 
-<h1>Index</h1>
+<!DOCTYPE html>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>Index</title>
+    </head>
+    <body>
+        <h4>Products pro</h4>
+        <hr />
+        <form asp-action="Index" asp-controller="Products" method="post">
+            <table cellpadding="0" cellspacing="0">
+                <tr>
+                    <th>ProductName</th>
+                    <th>BrandId</th>
+                    <th>Category</th>
+                    <th>Model</th>
+                    <th>ListPrice</th>
 
-@*<nav aria-label="Navigation Example">
-    @await this.Component.InvokeAsync("Pager", new {PagingList = this.Model})
-    </nav>
-*@@*<form asp-controller="Products" asp-action="Index" method="Get">
-    <p>
-    Product Name : <input asp-for="SearchString" />
-
-    Brand Name: 
-    <select asp-for="SelectedBrand" asp-items="Model.Brands"> 
-    <option value="">All</option>
-    </select>
-    Category Name : 
-    <select asp-for="SelectedCategory" asp-items="Model.Categories">
-    <option value="">All</option>
-    </select>
-    Model Year :
-    <select asp-for="SelectedYear" asp-items="Model.ModelYears">
-    <option value="">All</option>
-    </select>
-
-    <input type="submit" value="Filter" /> 
-
-    </p>
-    </form>*@
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @*@Html.DisplayNameFor(model => model.Products[0].ProductName)*@
-                @*<a asp-action="Index" asp-route-SortOrder="@ViewData["NameSortParm"]"
-                    asp-route-CurrentFilter="@ViewData["CurrentFilter"]">
-                    </a>*@
-                    Product Name
-
-            </th>
-            <th>
-                @*@Html.DisplayNameFor(model => model.Products[0].BrandId)*@
-                Brand
-            </th>
-            <th>
-                @*@Html.DisplayNameFor(model => model.Products[0].CategoryId)*@
-                Category
-            </th>
-            <th>
-                @*@Html.DisplayNameFor(model => model.Products[0].ModelYear)*@
-                Model Year
-            </th>
-            <th>
-                @*@Html.DisplayNameFor(model => model.Products[0].ListPrice)*@
-                List Price
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+                </tr>
+                @foreach(Product product in Model.Products)
+            {
+                <tr>
+                    <td>@product.ProductName</td>
+                    <td>@product.BrandId</td>
+                    <td>@product.CategoryId</td>
+                    <td>@product.ModelYear</td>
+                    <td>@product.ListPrice</td>
+                </tr>
+            }
+        </table>
+        <br />
+        <table cellpadding="0" cellspaciing="0">
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ProductName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.BrandId)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CategoryId)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ModelYear)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ListPrice)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
-                </td>
+                @for(int i =1; i <= Model.PageCount; i++)
+                {
+                    <td>
+                        @if(i != Model.CurrentPageIndex)
+                        {
+                            <a href="javascript:PagerClick(@i),">@i</a>
+                        }
+                        else
+                        {
+                            <span>@i</span>
+                        }
+                    </td>
+                }
             </tr>
-        }
-    </tbody>
-</table>
+        </table>
+        <input type="hidden" id="hfCurrentPageIndex" name="currentPageIndex" />
+       </form>
+       <script type="text/javascript">
+           function PagerClick(index) {
+               document.getElementById("hfCurrentPageIndex").value = index;
+               document.forms[0].submit();
+           }
+       </script>
+    </body>
 
-<partial name="_pager" model="@pager" />
+</html>
 
-@* paging bar
-    comment  a move it to partialView(_pager.cshtml)
-*@
-@*
-    <div class="container">
-    @if (pager.TotalPages > 0)
-    {
-            <ul class="pagination justify-content-end">
-
-            @if(pager.CurrentPage > 1)
-            {
-                <li class="page-item">
-                    <a class="page-link" asp-controller="Products" asp-action="Index"
-                    asp-route-pg="1">First</a>
-                </li>
-                <li>
-                    <a class="page-link" asp-controller="Products" asp-action="Index"
-                    asp-route-pg="@(pager.CurrentPage -1)">Previous</a>
-                </li>
-
-            }
-
-            @for (var pge = pager.StartPage; pge <= pager.Endpage; pge++)
-            {
-                        <li class="page-item @(pge == pager.CurrentPage ? "active" : "")">
-                            <a class="page-link" asp-controller="Products" asp-route-pg="@pge">@pge</a>
-                        </li>
-
-            }
-                @*next and last
-            @if (pager.CurrentPage < pager.TotalPages)
-            {
-                            <li>
-                                <a class="page-link" asp-controller="Products" asp-action="Index" 
-                    asp-route-pg="@(pager.CurrentPage + 1)"> Next</a>
-                            </li>
-                            <li>
-                                <a class="page-link" asp-controller="Products" asp-action="Index"
-                    asp-route-pg="@(pager.TotalPages)">Last</a>
-                        </li>
-            }
-            </ul>
-    }
-    </div>
-*@
-
-
-
-@*<nav aria-label="Navigation Example">
-    <vc:pager paging-list="@Model"></vc:pager>
-    </nav>
-*@
-
-@*
-    @{
-    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
-    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
-    }
-    <a asp-action="Index"
-    asp-route-sortOrder="@ViewData["CurrentSort"]"
-    asp-route-PageNumber="@(Model.PageIndex - 1)"
-    asp-route-currentFilter="@ViewData["CurrentFilter"]"
-    class="btn btn-default @prevDisabled">
-    Previous
-    </a>
-    <a asp-action="Index"
-    asp-route-sortOrder="@ViewData["CurrentSort"]"
-    asp-route-PageNumber="@(Model.PageIndex + 1)"
-    asp-route-currentFilter="@ViewData["CurrentFilter"]"
-    class="btn btn-default @nextDisabled">
-    Next
-    </a>
-*@

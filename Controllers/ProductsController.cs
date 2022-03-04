@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ReflectionIT.Mvc.Paging;
@@ -22,69 +23,75 @@ namespace StoreProject.Controllers
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
-        public IActionResult Index(int pg = 1)
-        {
-            List<Product> products = _context.Product.ToList();
+        //public async Task<IActionResult> IndexNo(int pg = 1)
+        //{
+        //    var qurey = _context.Product.AsNoTracking().OrderBy(p => p.ProductName);
+        //    var model = await PagingList.CreateAsync(qurey, 10, pg);
+        //    return View(model);
+        //}
 
-            const int pageSize = 10;
-            if (pg < 1)
-            {
-                pg = 1;
-            }
+        //    List<Product> products = _context.Product.ToList();
 
-            int rescCount = products.Count();
-            
-            var pager = new Pager(rescCount, pg, pageSize);
+        //    const int pageSize = 10;
+        //    if (pg < 1)
+        //    {
+        //        pg = 1;
+        //    }
 
-            int recSkip = (pg - 1) * pageSize;
+        //    int rescCount = products.Count();
 
-            var data = products.Skip(recSkip).Take(pager.PageSize).ToList();
+        //    var pager = new PagerNew(rescCount, pg, pageSize);
 
-            this.ViewBag.pager = pager;
+        //    int recSkip = (pg - 1) * pageSize;
 
-            return View(data);
+        //    var data = products.Skip(recSkip).Take(pager.PageSize).ToList();
 
-        }
+        //    this.ViewBag.pager = pager;
+
+        //    return View(data);
+
+        //}
+        //***************************************************
         //*****************************
         // paging using ReflectionIT
-        public async Task<IActionResult> IndexReflection(int page = 1)
+        //public async Task<IActionResult> IndexTest(int page = 1)
+        //{
+        //    var qurey = _context.Product.AsNoTracking().OrderBy(p => p.ProductName);
+        //    var model = await PagingList.CreateAsync(qurey, 10, page);
+        //    return View(model);
+        //}
+
+        public IActionResult Index()
         {
-            var qurey = _context.Product.AsNoTracking().OrderBy(p => p.ProductId);
-            var model = await PagingList.CreateAsync(qurey, 8, page);
-            return View(model);
+            return View(this.GetProducts(1));
         }
 
-        //public IActionResult IndexGet()
-        //{
-        //    return View(this.GetProducts(1));
-        //}
+        [HttpPost]
+        public IActionResult Index(int currentPageIndex)
+        {
+            return View();
+        }
 
-        //[HttpPost]
-        //public IActionResult IndexPost(int currentPageIndex)
-        //{
-        //    return View();
-        //}
+        private ProductListViewModel GetProducts(int currentPage)
+        {
+            int maxRows = 10;
+            ProductListViewModel productListViewModel = new ProductListViewModel();
 
-        //private ProductListViewModel GetProducts(int currentPage)
-        //{
-        //    int maxRows = 10;
-        //    ProductListViewModel productListViewModel = new ProductListViewModel();
+            productListViewModel.Products = (from m in this._context.Product
+                                             select m)
+                                                        .OrderBy(m => m.ProductId)
+                                                        .Skip((currentPage - 1) * maxRows)
+                                                        .Take(maxRows).ToList();
+            double pageCount = (double)(decimal)(this._context.Product.Count() / Convert.ToDecimal(maxRows));
 
-        //    productListViewModel.Products = (from m in this._context.Product
-        //                                                     select m)
-        //                                                .OrderBy(m => m.ProductId)
-        //                                                .Skip((currentPage - 1) * maxRows)
-        //                                                .Take(maxRows).ToList();
-        //    double pageCount = (double)(decimal)(this._context.Product.Count() / Convert.ToDecimal(maxRows));
+            productListViewModel.PageCount = (int)Math.Ceiling(pageCount);
 
-        //    productListViewModel.PageCount = (int)Math.Ceiling(pageCount);
+            productListViewModel.CurrentPageIndex = currentPage;
 
-        //    productListViewModel.CurrentPageIndex = currentPage;
-
-        //    return productListViewModel;
+            return productListViewModel;
 
 
-        //}
+        }
 
         //GET : Products
         public async Task<IActionResult> IndexFirst(

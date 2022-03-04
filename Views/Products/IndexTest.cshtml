@@ -3,10 +3,10 @@
 *@
 @model ReflectionIT.Mvc.Paging.PagingList<StoreProject.Models.Product>
 @using ReflectionIT.Mvc.Paging
-@addTagHelper *, ReflectionIT.Mvc..Paging
+@addTagHelper *, ReflectionIT.Mvc.Paging
 
 @{
-    ViewData["Title"] = "IndexReflection";
+    ViewData["Title"] = "IndexTest";
 }
 <h1>Index Reflection</h1>
 
@@ -15,7 +15,7 @@
 </p>
 
 <div class="container">
-<nav aria-label="pagination justify-content-end">
+<nav aria-label="Product Navigation">
     @await this.Component.InvokeAsync("Pager", new {PagingList = this.Model })
 </nav>
 </div>
@@ -25,29 +25,26 @@
         <tr>
             <th>
                 @*@Html.DisplayNameFor(model => model.Products[0].ProductName)*@
-                @*<a asp-action="Index" asp-route-SortOrder="@ViewData["NameSortParm"]"
-                    asp-route-CurrentFilter="@ViewData["CurrentFilter"]">
-                    </a>*@
-                    Product Name
-
+                Product Name
             </th>
             <th>
-                @*@Html.DisplayNameFor(model => model.Products[0].BrandId)*@
-                Brand
+                @*@Html.DisplayNameFor(model => model.Products.BrandId)*@
+                B
+                
             </th>
             <th>
-                @*@Html.DisplayNameFor(model => model.Products[0].CategoryId)*@
-                Category
+                @*@Html.DisplayNameFor(model => model.Products.CategoryId)*@
+                C
             </th>
             <th>
-                @*@Html.DisplayNameFor(model => model.Products[0].ModelYear)*@
-                Model Year
+                @*@Html.DisplayNameFor(model => model.Products.ModelYear)      *@
+                M
             </th>
             <th>
-                @*@Html.DisplayNameFor(model => model.Products[0].ListPrice)*@
-                List Price
+                @*@Html.DisplayNameFor(model => model.Products.ListPrice)*@
+                L
             </th>
-            <th></th>
+            
         </tr>
     </thead>
     <tbody>
@@ -78,8 +75,7 @@
         }
     </tbody>
 </table>
-<div class="container"> 
-<nav aria-label="pagination justify-content-end" >
+
+<nav aria-label="Product navigation" >
     <vc:pager paging-list="@Model" />    
 </nav>
-</div>
