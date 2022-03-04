@@ -1,80 +1,107 @@
-﻿@*@model StoreProject.ViewModels.ProductListViewModel*@
+﻿@model StoreProject.ViewModels.ProductListViewModel
 @*@model PaginatedList<StoreProject.ViewModels.ProductListViewModel>*@
 @*@model PaginatedList<StoreProject.Models.Product>*@
 @**@    
 @*@model IEnumerable<StoreProject.Models.Product>*@
 
-@*@model ReflectionIT.Mvc.Paging.PagingList<StoreProject.Models.Product>
-@using ReflectionIT.Mvc.Paging
-@addTagHelper *, ReflectionIT.Mvc.Paging
-*@
-@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@using StoreProject.ViewModels;
-
-@model StoreProject.ViewModels.ProductListViewModel
-
 @{
-    Layout = null;
+    ViewData["Title"] = "Index";
+
+    Pager pager = new Pager();
+
+    int pageNo = 0;
+    if (ViewBag.Pager != null)
+    {
+        pager = ViewBag.Pager;
+        pageNo = pager.CurrentPage;
+    }
 }
 
-<!DOCTYPE html>
+<h1>Index</h1>
 
-<html>
-    <head>
-        <meta name="viewport" content="width=device-width" />
-        <title>Index</title>
-    </head>
-    <body>
-        <h4>Products pro</h4>
-        <hr />
-        <form asp-action="Index" asp-controller="Products" method="post">
-            <table cellpadding="0" cellspacing="0">
-                <tr>
-                    <th>ProductName</th>
-                    <th>BrandId</th>
-                    <th>Category</th>
-                    <th>Model</th>
-                    <th>ListPrice</th>
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
 
-                </tr>
-                @foreach(Product product in Model.Products)
-            {
-                <tr>
-                    <td>@product.ProductName</td>
-                    <td>@product.BrandId</td>
-                    <td>@product.CategoryId</td>
-                    <td>@product.ModelYear</td>
-                    <td>@product.ListPrice</td>
-                </tr>
-            }
-        </table>
-        <br />
-        <table cellpadding="0" cellspaciing="0">
+@*<form asp-controller="Products" asp-action="Index" method="Get">
+    <p>
+    Product Name : <input asp-for="SearchString" />
+
+    Brand Name: 
+    <select asp-for="SelectedBrand" asp-items="Model.Brands"> 
+    <option value="">All</option>
+    </select>
+    Category Name : 
+    <select asp-for="SelectedCategory" asp-items="Model.Categories">
+    <option value="">All</option>
+    </select>
+    Model Year :
+    <select asp-for="SelectedYear" asp-items="Model.ModelYears">
+    <option value="">All</option>
+    </select>
+
+    <input type="submit" value="Filter" /> 
+
+    </p>
+</form>*@
+    
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Products[0].ProductName)*@
+                @*<a asp-action="Index" asp-route-SortOrder="@ViewData["NameSortParm"]"
+                    asp-route-CurrentFilter="@ViewData["CurrentFilter"]">
+                    </a>*@
+                    Product Name
+
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Products[0].BrandId)*@
+                Brand
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Products[0].CategoryId)*@
+                Category
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Products[0].ModelYear)*@
+                Model Year
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Products[0].ListPrice)*@
+                List Price
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Products)
+        {
             <tr>
-                @for(int i =1; i <= Model.PageCount; i++)
-                {
-                    <td>
-                        @if(i != Model.CurrentPageIndex)
-                        {
-                            <a href="javascript:PagerClick(@i),">@i</a>
-                        }
-                        else
-                        {
-                            <span>@i</span>
-                        }
-                    </td>
-                }
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BrandId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CategoryId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ModelYear)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ListPrice)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
+                </td>
             </tr>
-        </table>
-        <input type="hidden" id="hfCurrentPageIndex" name="currentPageIndex" />
-       </form>
-       <script type="text/javascript">
-           function PagerClick(index) {
-               document.getElementById("hfCurrentPageIndex").value = index;
-               document.forms[0].submit();
-           }
-       </script>
-    </body>
+        }
+    </tbody>
+</table>
 
-</html>
-
+<partial name="_pager" model="@pager" />

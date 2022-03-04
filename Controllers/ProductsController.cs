@@ -23,76 +23,31 @@ namespace StoreProject.Controllers
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
-        //public async Task<IActionResult> IndexNo(int pg = 1)
-        //{
-        //    var qurey = _context.Product.AsNoTracking().OrderBy(p => p.ProductName);
-        //    var model = await PagingList.CreateAsync(qurey, 10, pg);
-        //    return View(model);
-        //}
 
-        //    List<Product> products = _context.Product.ToList();
-
-        //    const int pageSize = 10;
-        //    if (pg < 1)
-        //    {
-        //        pg = 1;
-        //    }
-
-        //    int rescCount = products.Count();
-
-        //    var pager = new PagerNew(rescCount, pg, pageSize);
-
-        //    int recSkip = (pg - 1) * pageSize;
-
-        //    var data = products.Skip(recSkip).Take(pager.PageSize).ToList();
-
-        //    this.ViewBag.pager = pager;
-
-        //    return View(data);
-
-        //}
-        //***************************************************
-        //*****************************
-        // paging using ReflectionIT
-        //public async Task<IActionResult> IndexTest(int page = 1)
-        //{
-        //    var qurey = _context.Product.AsNoTracking().OrderBy(p => p.ProductName);
-        //    var model = await PagingList.CreateAsync(qurey, 10, page);
-        //    return View(model);
-        //}
-
-        public IActionResult Index()
+        public async Task<IActionResult> Index(int pg = 1)
         {
-            return View(this.GetProducts(1));
-        }
+            List<Product> products = _context.Product.ToList();
 
-        [HttpPost]
-        public IActionResult Index(int currentPageIndex)
-        {
-            return View();
-        }
+            const int pageSize = 10;
+            if (pg < 1)
+            {
+                pg = 1;
+            }
 
-        private ProductListViewModel GetProducts(int currentPage)
-        {
-            int maxRows = 10;
-            ProductListViewModel productListViewModel = new ProductListViewModel();
+            int rescCount = products.Count();
 
-            productListViewModel.Products = (from m in this._context.Product
-                                             select m)
-                                                        .OrderBy(m => m.ProductId)
-                                                        .Skip((currentPage - 1) * maxRows)
-                                                        .Take(maxRows).ToList();
-            double pageCount = (double)(decimal)(this._context.Product.Count() / Convert.ToDecimal(maxRows));
+            var pager = new Pager(rescCount, pg, pageSize);
 
-            productListViewModel.PageCount = (int)Math.Ceiling(pageCount);
+            int recSkip = (pg - 1) * pageSize;
 
-            productListViewModel.CurrentPageIndex = currentPage;
+            var data = products.Skip(recSkip).Take(pager.PageSize).ToList();
 
-            return productListViewModel;
+            this.ViewBag.pager = pager;
 
+            return View(data);
 
         }
-
+        
         //GET : Products
         public async Task<IActionResult> IndexFirst(
             ProductListViewModel productListViewModel)
@@ -176,10 +131,10 @@ namespace StoreProject.Controllers
 
             
 
-            int pageSize = 10;
-            return View(await PaginatedList<Product>.CreateAsync(products.AsNoTracking(),
-                productListViewModel.PageNumber ?? 1, pageSize));
-            //return View(productListViewModel);
+            //int pageSize = 10;
+            //return View(await PaginatedList<Product>.CreateAsync(products.AsNoTracking(),
+            //    productListViewModel.PageNumber ?? 1, pageSize));
+            return View(productListViewModel);
 
         }
 
