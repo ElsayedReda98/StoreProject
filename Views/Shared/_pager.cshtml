@@ -1,4 +1,4 @@
-﻿@model StoreProject.Models.Pager
+﻿@model StoreProject.ViewModels.ProductListViewModel
 
 @*
     change pager to Model 
@@ -13,18 +13,18 @@
             {
                 <li class="page-item">
                     <a class="page-link" asp-controller="Products" asp-action="Index"
-                    asp-route-pg="1">First</a>
+                    asp-route-PageNumber="1">First</a>
                 </li>
                 <li>
                     <a class="page-link" asp-controller="Products" asp-action="Index"
-                    asp-route-pg="@(Model.CurrentPage -1)">Previous</a>
+                    asp-route-PageNumber="@(Model.CurrentPage -1)">Previous</a>
                 </li>
             }
 
-            @for (var pge = Model.StartPage; pge <= Model.Endpage; pge++)
+            @for (var counter = Model.StartPage; counter <= Model.Endpage; counter++)
             {
-                        <li class="page-item @(pge == Model.CurrentPage ? "active" : "")">
-                            <a class="page-link" asp-controller="Products" asp-route-pg="@pge">@pge</a>
+                        <li class="page-item @(counter == Model.CurrentPage ? "active" : "")">
+                            <a class="page-link" asp-controller="Products" asp-route-PageNumber="@counter">@counter</a>
                         </li>
             }
 
@@ -33,11 +33,11 @@
             {
                             <li>
                                 <a class="page-link" asp-controller="Products" asp-action="Index" 
-                    asp-route-pg="@(Model.CurrentPage + 1)"> Next</a>
+                    asp-route-PageNumber="@(Model.CurrentPage + 1)"> Next</a>
                             </li>
                             <li>
                                 <a class="page-link" asp-controller="Products" asp-action="Index"
-                    asp-route-pg="@(Model.TotalPages)">Last</a>
+                    asp-route-PageNumber="@(Model.TotalPages)">Last</a>
                         </li>
             }
          </ul>

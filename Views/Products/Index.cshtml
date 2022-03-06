@@ -1,13 +1,11 @@
-﻿@model StoreProject.ViewModels.ProductListViewModel
-@*@model PaginatedList<StoreProject.ViewModels.ProductListViewModel>*@
-@*@model PaginatedList<StoreProject.Models.Product>*@
-@**@    
-@*@model IEnumerable<StoreProject.Models.Product>*@
+﻿@using StoreProject.ViewModels
+@model StoreProject.ViewModels.ProductListViewModel
+
 
 @{
     ViewData["Title"] = "Index";
 
-    Pager pager = new Pager();
+    ProductListViewModel pager = new ProductListViewModel();
 
     int pageNo = 0;
     if (ViewBag.Pager != null)
@@ -23,7 +21,7 @@
     <a asp-action="Create">Create New</a>
 </p>
 
-@*<form asp-controller="Products" asp-action="Index" method="Get">
+<form asp-controller="Products" asp-action="Index" method="Get">
     <p>
     Product Name : <input asp-for="SearchString" />
 
@@ -43,34 +41,28 @@
     <input type="submit" value="Filter" /> 
 
     </p>
-</form>*@
+</form>
     
 <table class="table">
     <thead>
         <tr>
             <th>
-                @*@Html.DisplayNameFor(model => model.Products[0].ProductName)*@
-                @*<a asp-action="Index" asp-route-SortOrder="@ViewData["NameSortParm"]"
-                    asp-route-CurrentFilter="@ViewData["CurrentFilter"]">
-                    </a>*@
-                    Product Name
-
+                @Html.DisplayNameFor(model => model.Products[0].ProductName)
+                
             </th>
             <th>
-                @*@Html.DisplayNameFor(model => model.Products[0].BrandId)*@
-                Brand
+                @Html.DisplayNameFor(model => model.Products[0].BrandId)
+                
             </th>
             <th>
-                @*@Html.DisplayNameFor(model => model.Products[0].CategoryId)*@
-                Category
+                @Html.DisplayNameFor(model => model.Products[0].CategoryId)
             </th>
             <th>
-                @*@Html.DisplayNameFor(model => model.Products[0].ModelYear)*@
-                Model Year
+                @Html.DisplayNameFor(model => model.Products[0].ModelYear)
+                
             </th>
             <th>
-                @*@Html.DisplayNameFor(model => model.Products[0].ListPrice)*@
-                List Price
+                @Html.DisplayNameFor(model => model.Products[0].ListPrice)
             </th>
             <th></th>
         </tr>

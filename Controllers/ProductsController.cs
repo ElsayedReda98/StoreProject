@@ -24,49 +24,35 @@ namespace StoreProject.Controllers
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public async Task<IActionResult> Index(int pg = 1)
-        {
-            List<Product> products = _context.Product.ToList();
+        //public async Task<IActionResult> Index(int pg = 1)
+        //{
+        //    List<Product> products = _context.Product.ToList();
 
-            const int pageSize = 10;
-            if (pg < 1)
-            {
-                pg = 1;
-            }
+        //    const int pageSize = 10;
+        //    if (pg < 1)
+        //    {
+        //        pg = 1;
+        //    }
 
-            int rescCount = products.Count();
+        //    int rescCount = products.Count();
 
-            var pager = new Pager(rescCount, pg, pageSize);
+        //    var pager = new Pager(rescCount, pg, pageSize);
 
-            int recSkip = (pg - 1) * pageSize;
+        //    int recSkip = (pg - 1) * pageSize;
 
-            var data = products.Skip(recSkip).Take(pager.PageSize).ToList();
+        //    var data = products.Skip(recSkip).Take(pager.PageSize).ToList();
 
-            this.ViewBag.pager = pager;
+        //    ViewBag.pager = pager;
 
-            return View(data);
+        //    return View(data);
 
-        }
+        //}
         
         //GET : Products
-        public async Task<IActionResult> IndexFirst(
+        public async Task<IActionResult> Index(
             ProductListViewModel productListViewModel)
         {
-            ViewData["CurrentSort"] = productListViewModel.SortOrder;
-            ViewData["NameSortParm"] = string.IsNullOrEmpty(productListViewModel.SortOrder) ? "name_desc" : "";
-
-
-            if (productListViewModel.SearchString != null)
-            {
-                productListViewModel.PageNumber = 1;
-            }
-            else
-            {
-                productListViewModel.SearchString = productListViewModel.CurrentFilter;
-            }
-
-            ViewData["CurrentFilter"] = productListViewModel.SearchString;
-
+            
             //use Linq to get list of Brands
             var brandQuery = from b in _context.Brand
                              select b;
@@ -78,8 +64,6 @@ namespace StoreProject.Controllers
                             .Include(s => s.Brand)
                             .Include(c => c.Category);
 
-            //var products =from s in _context.Product
-              //             select s;
 
             if (!string.IsNullOrEmpty(productListViewModel. SearchString))
             {
@@ -100,16 +84,6 @@ namespace StoreProject.Controllers
                 products = products.Where(z => z.ModelYear == productListViewModel.SelectedYear);
             }
 
-            switch (productListViewModel.SortOrder)
-            {
-                case "name_desc":
-                    products = products.OrderByDescending(s => s.ProductName);
-                    break;
-                default:
-                    products = products.OrderBy(s => s.ProductName);
-                    break;
-            }
-
             productListViewModel.Brands = await _context.Brand.Select
                         (a => new SelectListItem()
                         {
@@ -127,13 +101,25 @@ namespace StoreProject.Controllers
                         Value = y.ModelYear.ToString()
                     }).Distinct().ToListAsync();
 
-            productListViewModel.Products = await products.ToListAsync();
+            //productListViewModel.Products = await products.ToListAsync();
+
+            const int pageSize = 10;
+            if (productListViewModel.PageNumber < 1)
+            {
+                productListViewModel.PageNumber = 1;
+            }
+
+            int rescCount = products.Count();
+
+            var pager = new ProductListViewModel(rescCount, productListViewModel.PageNumber, pageSize);
+
+            int recSkip = (productListViewModel.PageNumber - 1) * pageSize;
 
             
+            productListViewModel.Products = products.Skip(recSkip).Take(pager.PageSize).ToList();
 
-            //int pageSize = 10;
-            //return View(await PaginatedList<Product>.CreateAsync(products.AsNoTracking(),
-            //    productListViewModel.PageNumber ?? 1, pageSize));
+            ViewBag.pager = pager;
+
             return View(productListViewModel);
 
         }
