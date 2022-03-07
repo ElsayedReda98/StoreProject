@@ -154,34 +154,39 @@ namespace StoreProject.Controllers
         // GET: Products/Create
         public async Task<IActionResult> Create(ProductViewModel productViewModel)
         {
-               
-            
-            productViewModel.Brands = await _context.Brand.Select
-            (a => new SelectListItem()
-            {
-                Text = a.BrandName,
-                Value = a.BrandId.ToString()
-            }).ToListAsync();
 
-            productViewModel.Categories = await _context.Category.Select
-                (c => new SelectListItem(c.CategoryName, c.CategoryId.ToString())).ToListAsync();
 
-            productViewModel.MYears = await _context.Product.Select
-                (y => new SelectListItem()
-                {
-                    Text = y.ModelYear.ToString(),
-                    Value = y.ModelYear.ToString()
-                }).Distinct().ToListAsync();
+            //productViewModel.Brands = await _context.Brand.Select
+            //(a => new SelectListItem()
+            //{
+            //    Text = a.BrandName,
+            //    Value = a.BrandId.ToString()
+            //}).ToListAsync();
 
-            
+            //productViewModel.Categories = await _context.Category.Select
+            //    (c => new SelectListItem(c.CategoryName, c.CategoryId.ToString())).ToListAsync();
+
+            //productViewModel.MYears = await _context.Product.Select
+            //    (y => new SelectListItem()
+            //    {
+            //        Text = y.ModelYear.ToString(),
+            //        Value = y.ModelYear.ToString()
+            //    }).Distinct().ToListAsync();
+
+
             //productVM.BrandId = 281;
 
             //productVM.CategoryId = 26;
 
             //productVM.ModelYear = 2022;
 
+            ViewBag.Brands = _context.Brand.OrderBy(b => b.BrandId).ToList();
 
-            return View(productViewModel);
+            ViewBag.Categories = _context.Category.OrderBy(b => b.CategoryId).ToList();
+            
+            ViewBag.Years = await ( _context.Product).Distinct().ToListAsync();
+
+            return View();
         }
 
         // POST: Products/Create
@@ -191,82 +196,111 @@ namespace StoreProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ProductId,ProductName,BrandId,CategoryId,ModelYear,ListPrice")] Product product)
         {
-            var productVM = new ProductViewModel();
-            productVM.Brands = await _context.Brand.Select
-                    (a => new SelectListItem()
-                    {
-                        Text = a.BrandName,
-                        Value = a.BrandId.ToString()
-                    }).ToListAsync();
+            //var productVM = new ProductViewModel();
+            //productVM.Brands = await _context.Brand.Select
+            //        (a => new SelectListItem()
+            //        {
+            //            Text = a.BrandName,
+            //            Value = a.BrandId.ToString()
+            //        }).ToListAsync();
 
-            productVM.Categories = await _context.Category.Select
-                (c => new SelectListItem(c.CategoryName, c.CategoryId.ToString())).ToListAsync();
+            //productVM.Categories = await _context.Category.Select
+            //    (c => new SelectListItem(c.CategoryName, c.CategoryId.ToString())).ToListAsync();
 
-            productVM.MYears = await _context.Product.Select
-                (y => new SelectListItem()
-                {
-                    Text = y.ModelYear.ToString(),
-                    Value = y.ModelYear.ToString()
-                }).Distinct().ToListAsync();
+            //productVM.MYears = await _context.Product.Select
+            //    (y => new SelectListItem()
+            //    {
+            //        Text = y.ModelYear.ToString(),
+            //        Value = y.ModelYear.ToString()
+            //    }).Distinct().ToListAsync();
             
+            ViewBag.Brands = _context.Brand.OrderBy(b => b.BrandId).ToList();
+
+            ViewBag.Categories = _context.Category.OrderBy(b => b.CategoryId).ToList();
+
+            ViewBag.Years = _context.Product.OrderBy(b => b.ModelYear).Distinct().ToList();
+
+
             if (ModelState.IsValid)
             {
-                var productNameExist = _context.Product.Any(p => p.ProductName == product.ProductName);
-
-                if (productNameExist)
+                var Name_Year_Exist = _context.Product.Any(p => p.ProductName == product.ProductName && p.ModelYear == product.ModelYear);
+                
+                if (Name_Year_Exist)
                 {
-                    ModelState.AddModelError("ProductName", "Can't Create Product, This Product Name is Already Exist ");
+                    
+                    ModelState.AddModelError("ProductName", "Can't Create Product, This Product Name is Already Exist in This Model Year ");
                     return View(product);
                     
                 }
-                else if
-                _context.Add(product);
+                //var name_Brand_Exist = _context.Product.Any(b => b.ProductName == product.ProductName && b.BrandId == product.BrandId);
+                //if (name_Brand_Exist)
+                //{
+                //    ModelState.AddModelError("ProductName" ," Can't Create Product, This Product Name is Already Exist in This Brand");
+                //    return View(product);
+                //}
+
+                //var Name_Category_Exist = _context.Product.Any(c => c.ProductName == product.ProductName && c.CategoryId == product.CategoryId);
+                //if (Name_Category_Exist)
+                //{
+                //    ModelState.AddModelError("ProductName", " Can't Create Product, This Product Name is Already Exist in This Category");
+                //    return View(product);
+                //}
+
+
+                _context.Product.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            
-            return View(productVM);
+            ViewBag.Brands = _context.Brand.OrderBy(b => b.BrandId).ToList();
+
+            ViewBag.Categories = _context.Category.OrderBy(b => b.CategoryId).ToList();
+
+            ViewBag.Years = _context.Product.OrderBy(b => b.ModelYear).Distinct().ToList();
+
+            return View();
         }
 
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            var productVM = new ProductViewModel();
-            productVM.Brands = await _context.Brand.Select
-                (a => new SelectListItem()
-                {
-                    Text = a.BrandName,
-                    Value = a.BrandId.ToString()
-                }).ToListAsync();
+            //var productVM = new ProductViewModel();
+            //productVM.Brands = await _context.Brand.Select
+            //    (a => new SelectListItem()
+            //    {
+            //        Text = a.BrandName,
+            //        Value = a.BrandId.ToString()
+            //    }).ToListAsync();
 
-            productVM.Categories = await _context.Category.Select
-                (c => new SelectListItem(c.CategoryName, c.CategoryId.ToString())).ToListAsync();
+            //productVM.Categories = await _context.Category.Select
+            //    (c => new SelectListItem(c.CategoryName, c.CategoryId.ToString())).ToListAsync();
 
-            productVM.MYears = await _context.Product.Select
-                (y => new SelectListItem()
-                {
-                    Text = y.ModelYear.ToString(),
-                    Value = y.ModelYear.ToString()
-                }).Distinct().ToListAsync();
+            //productVM.MYears = await _context.Product.Select
+            //    (y => new SelectListItem()
+            //    {
+            //        Text = y.ModelYear.ToString(),
+            //        Value = y.ModelYear.ToString()
+            //    }).Distinct().ToListAsync();
+
+            ViewBag.Brands = _context.Brand.OrderBy(b => b.BrandId).ToList();
+
+            ViewBag.Categories = _context.Category.OrderBy(b => b.CategoryId).ToList();
+
+            ViewBag.Years = _context.Product.OrderBy(b => b.ModelYear).ToList();
+
 
             if (id == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-             var product = await _context.Product.FindAsync(id);
+            var product = await _context.Product.FindAsync(id);
             
             if (product == null)
             {
-                return BadRequest();
+                return NotFound();
             }
             
-            
-                
-                
-            
-
-            return View(productVM);
+            return View("Create", product);
         }
 
         // POST: Products/Edit/5
@@ -292,9 +326,9 @@ namespace StoreProject.Controllers
                         return View(product);
                     }
 
-
-                    _context.Update(product);
+                    _context.Product.Update(product);
                     await _context.SaveChangesAsync();
+                    
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -309,6 +343,14 @@ namespace StoreProject.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
+            ViewBag.Brands = _context.Brand.OrderBy(b => b.BrandId).ToList();
+
+            ViewBag.Categories = _context.Category.OrderBy(b => b.CategoryId).ToList();
+
+            ViewBag.Years = _context.Product.OrderBy(b => b.ModelYear).Distinct().ToList();
+
+
             return View(product);
         }
 
