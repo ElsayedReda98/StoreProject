@@ -300,7 +300,7 @@ namespace StoreProject.Controllers
                 return NotFound();
             }
             
-            return View("Create", product);
+            return View( product);
         }
 
         // POST: Products/Edit/5
@@ -338,7 +338,8 @@ namespace StoreProject.Controllers
                     }
                     else
                     {
-                        throw;
+                        Console.WriteLine("Oops, Error");
+                        //throw;
                     }
                 }
                 return RedirectToAction(nameof(Index));

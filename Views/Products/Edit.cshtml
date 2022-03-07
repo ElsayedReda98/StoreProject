@@ -29,17 +29,17 @@
             <div class="form-group">
                 <label asp-for="CategoryId" class="control-label"></label>
                 @*<select asp-for="CategoryId" class="form-control" asp-items="Model.Categories" ></select>*@
-                @*<select asp-for="CategoryId" 
-                        asp-items="@(new SelectList(ViewBag.Categories,"CategoryId","CategoryName"))"
-                        class="form-control"></select>*@
+                <select asp-for="CategoryId" 
+                        asp-items="@(new SelectList(ViewBag.Categories,"CategoryId", "CategoryName" ))"
+                        class="form-control"></select>
                 <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="ModelYear" class="control-label"></label>
                 @*<select asp-for="ModelYear" class="form-control" asp-items="Model.MYears" ></select>*@
-                @*<select asp-for="ModelYear" 
+                <select asp-for="ModelYear" 
                         asp-items="@(new SelectList(ViewBag.Years,"ModelYear","ModelYear"))"
-                        class="form-control"></select>*@
+                        class="form-control"></select>
                 <span asp-validation-for="ModelYear" class="text-danger"></span>
             </div>
             <div class="form-group">
