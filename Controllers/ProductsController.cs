@@ -61,8 +61,10 @@ namespace StoreProject.Controllers
                                  select c;
 
             IQueryable<Product> products = _context.Product
-                            .Include(s => s.Brand)
-                            .Include(c => c.Category);
+                            //.Include("Brand")
+
+                            //.Include("Category")
+                            .OrderBy(p => p.ProductName);
 
 
             if (!string.IsNullOrEmpty(productListViewModel. SearchString))
@@ -76,7 +78,7 @@ namespace StoreProject.Controllers
 
             if (productListViewModel.SelectedCategory > 0 )
             {
-                products = products.Where(x => x.CategoryId == productListViewModel.SelectedCategory);
+                products = products.Where(y => y.CategoryId == productListViewModel.SelectedCategory);
             }
 
             if (productListViewModel.SelectedYear > 0 )
@@ -116,9 +118,15 @@ namespace StoreProject.Controllers
             int recSkip = (productListViewModel.PageNumber - 1) * pageSize;
 
             
-            productListViewModel.Products = products.Skip(recSkip).Take(pager.PageSize).ToList();
+            productListViewModel.Products = products
+                                            .Include(b => b.Brand)
+                                            .Include("Category")
+                                            .OrderBy(p => p.ProductName)
+                                            .Skip(recSkip)
+                                            .Take(pager.PageSize)
+                                            .ToList();
 
-            ViewBag.pager = pager;
+            ViewBag.Pager = pager;
 
             return View(productListViewModel);
 
@@ -144,21 +152,21 @@ namespace StoreProject.Controllers
         }
 
         // GET: Products/Create
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(ProductViewModel productViewModel)
         {
                
-            var productVM = new ProductViewModel();
-            productVM.Brands = await _context.Brand.Select
+            
+            productViewModel.Brands = await _context.Brand.Select
             (a => new SelectListItem()
             {
                 Text = a.BrandName,
                 Value = a.BrandId.ToString()
             }).ToListAsync();
 
-            productVM.Categories = await _context.Category.Select
+            productViewModel.Categories = await _context.Category.Select
                 (c => new SelectListItem(c.CategoryName, c.CategoryId.ToString())).ToListAsync();
 
-            productVM.MYears = await _context.Product.Select
+            productViewModel.MYears = await _context.Product.Select
                 (y => new SelectListItem()
                 {
                     Text = y.ModelYear.ToString(),
@@ -173,7 +181,7 @@ namespace StoreProject.Controllers
             //productVM.ModelYear = 2022;
 
 
-            return View(productVM);
+            return View(productViewModel);
         }
 
         // POST: Products/Create
@@ -183,7 +191,46 @@ namespace StoreProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ProductId,ProductName,BrandId,CategoryId,ModelYear,ListPrice")] Product product)
         {
+            var productVM = new ProductViewModel();
+            productVM.Brands = await _context.Brand.Select
+                    (a => new SelectListItem()
+                    {
+                        Text = a.BrandName,
+                        Value = a.BrandId.ToString()
+                    }).ToListAsync();
 
+            productVM.Categories = await _context.Category.Select
+                (c => new SelectListItem(c.CategoryName, c.CategoryId.ToString())).ToListAsync();
+
+            productVM.MYears = await _context.Product.Select
+                (y => new SelectListItem()
+                {
+                    Text = y.ModelYear.ToString(),
+                    Value = y.ModelYear.ToString()
+                }).Distinct().ToListAsync();
+            
+            if (ModelState.IsValid)
+            {
+                var productNameExist = _context.Product.Any(p => p.ProductName == product.ProductName);
+
+                if (productNameExist)
+                {
+                    ModelState.AddModelError("ProductName", "Can't Create Product, This Product Name is Already Exist ");
+                    return View(product);
+                    
+                }
+                else if
+                _context.Add(product);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            
+            return View(productVM);
+        }
+
+        // GET: Products/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
             var productVM = new ProductViewModel();
             productVM.Brands = await _context.Brand.Select
                 (a => new SelectListItem()
@@ -201,42 +248,6 @@ namespace StoreProject.Controllers
                     Text = y.ModelYear.ToString(),
                     Value = y.ModelYear.ToString()
                 }).Distinct().ToListAsync();
-            if (ModelState.IsValid)
-            {
-                var productNameExist = _context.Product.Any(p => p.ProductName == product.ProductName);
-                if (productNameExist)
-                {
-                    ModelState.AddModelError("ProductName", "Can't Create Product, This Product Name is Already Exist ");
-                    return View(productVM);
-                }
-
-                _context.Add(product);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(product);
-        }
-
-        // GET: Products/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-        //    var productVM = new ProductViewModel();
-        //    productVM.Brands = await _context.Brand.Select
-        //        (a => new SelectListItem()
-        //        {
-        //            Text = a.BrandName,
-        //            Value = a.BrandId.ToString()
-        //        }).ToListAsync();
-
-        //    productVM.Categories = await _context.Category.Select
-        //        (c => new SelectListItem(c.CategoryName, c.CategoryId.ToString())).ToListAsync();
-
-        //    productVM.MYears = await _context.Product.Select
-        //        (y => new SelectListItem()
-        //        {
-        //            Text = y.ModelYear.ToString(),
-        //            Value = y.ModelYear.ToString()
-        //        }).Distinct().ToListAsync();
 
             if (id == null)
             {
@@ -255,7 +266,7 @@ namespace StoreProject.Controllers
                 
             
 
-            return View(product);
+            return View(productVM);
         }
 
         // POST: Products/Edit/5

@@ -8,8 +8,6 @@ namespace StoreProject.Models
     public class ProductViewModel
     {
         
-        
-
         public int ProductId { get; set; }
 
         //[Display(Name = "Brand Name")]
