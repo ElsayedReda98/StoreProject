@@ -1,19 +1,27 @@
 ﻿@using StoreProject.ViewModels
 @model StoreProject.ViewModels.ProductListViewModel
 
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@using X.PagedList.Mvc.Core.Fluent;
+@using X.PagedList.Web.Common
 
 @{
     ViewData["Title"] = "Index";
+    //var pagedList = ViewBag.OnePageOfProducts;
 
     ProductListViewModel pager = new ProductListViewModel();
 
-    int pageNo = 0;
-    if (ViewBag.Pager != null)
-    {
-        pager = ViewBag.Pager;
-        pageNo = pager.CurrentPage;
-    }
+    //int pageNo = 0;
+    //if (ViewBag.Pager != null)
+    //{
+    //    pager = ViewBag.Pager;
+    //    pageNo = pager.CurrentPage;
+    //}
+
 }
+<link href="/css/PagedList.css" rel="stylesheet" type="text/css" />
+
 
 <h1>Index</h1>
 
@@ -21,7 +29,7 @@
     <a asp-action="Create">Create New</a>
 </p>
 
-<form asp-controller="Products" asp-action="Index" method="Get">
+@*<form asp-controller="Products" asp-action="Index" method="Get">
     <p>
     Product Name : <input asp-for="SearchString" />
 
@@ -42,7 +50,7 @@
 
     </p>
 </form>
-    
+*@    
 <table class="table">
     <thead>
         <tr>
@@ -96,4 +104,6 @@
     </tbody>
 </table>
 
-<partial name="_pager" model="@pager" />
+@Html.PagedListPager((IPagedList) pager.Products, page => Url.Action("Index", new { page }) )
+
+@*<partial name="_pager" model="@pager" />*@

@@ -6,7 +6,10 @@ namespace StoreProject.ViewModels
 {
     public class ProductListViewModel
     {
-        
+
+        public int? Page { get; set; } = 1;
+
+
         public string SearchString { get; set; }
 
         public int SelectedBrand { get; set; }

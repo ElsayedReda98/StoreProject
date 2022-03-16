@@ -11,6 +11,7 @@ using ReflectionIT.Mvc.Paging;
 using StoreProject.Data;
 using StoreProject.Models;
 using StoreProject.ViewModels;
+using X.PagedList;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace StoreProject.Controllers
@@ -24,33 +25,9 @@ namespace StoreProject.Controllers
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        //public async Task<IActionResult> Index(int pg = 1)
-        //{
-        //    List<Product> products = _context.Product.ToList();
-
-        //    const int pageSize = 10;
-        //    if (pg < 1)
-        //    {
-        //        pg = 1;
-        //    }
-
-        //    int rescCount = products.Count();
-
-        //    var pager = new Pager(rescCount, pg, pageSize);
-
-        //    int recSkip = (pg - 1) * pageSize;
-
-        //    var data = products.Skip(recSkip).Take(pager.PageSize).ToList();
-
-        //    ViewBag.pager = pager;
-
-        //    return View(data);
-
-        //}
-        
         //GET : Products
         public async Task<IActionResult> Index(
-            ProductListViewModel productListViewModel)
+            ProductListViewModel productListViewModel, int? page = 1)
         {
             
             //use Linq to get list of Brands
@@ -61,9 +38,9 @@ namespace StoreProject.Controllers
                                  select c;
 
             IQueryable<Product> products = _context.Product
-                            //.Include("Brand")
+                            .Include("Brand")
 
-                            //.Include("Category")
+                            .Include("Category")
                             .OrderBy(p => p.ProductName);
 
 
@@ -103,32 +80,44 @@ namespace StoreProject.Controllers
                         Value = y.ModelYear.ToString()
                     }).Distinct().ToListAsync();
 
-            //productListViewModel.Products = await products.ToListAsync();
+            productListViewModel.Products = await products.ToListAsync();
 
-            const int pageSize = 10;
-            if (productListViewModel.PageNumber < 1)
-            {
-                productListViewModel.PageNumber = 1;
-            }
+            var pageNumber = page ?? 1;
 
-            int rescCount = products.Count();
+            var onepageOfProducts = products.ToPagedList(pageNumber, 25);
 
-            var pager = new ProductListViewModel(rescCount, productListViewModel.PageNumber, pageSize);
-
-            int recSkip = (productListViewModel.PageNumber - 1) * pageSize;
-
-            
-            productListViewModel.Products = products
-                                            .Include(b => b.Brand)
-                                            .Include("Category")
-                                            .OrderBy(p => p.ProductName)
-                                            .Skip(recSkip)
-                                            .Take(pager.PageSize)
-                                            .ToList();
-
-            ViewBag.Pager = pager;
+            ViewBag.Ones = onepageOfProducts;
 
             return View(productListViewModel);
+
+
+            //*************************************************
+            // for paging
+            //const int pageSize = 10;
+            //if (productListViewModel.PageNumber < 1)
+            //{
+            //    productListViewModel.PageNumber = 1;
+            //}
+
+            //int resultCount = products.Count();
+
+            //var pager = new ProductListViewModel(rescCount, productListViewModel.PageNumber, pageSize);
+
+            //int recordSkip = (productListViewModel.PageNumber - 1) * pageSize;
+
+
+            /* productListViewModel.Products = products
+                                             .Include(b => b.Brand)
+                                             .Include("Category")
+                                             .OrderBy(p => p.ProductName)
+                                             .Skip(recSkip)
+                                             .Take(pager.PageSize)
+                                             .ToList();
+
+             ViewBag.Pager = pager; */
+            //***************************************************
+
+
 
         }
 
