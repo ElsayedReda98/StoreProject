@@ -1,24 +1,10 @@
 ﻿@using StoreProject.ViewModels
+@using X.PagedList.Mvc.Core
 @model StoreProject.ViewModels.ProductListViewModel
-
-@using X.PagedList.Mvc.Core;
-@using X.PagedList;
-@using X.PagedList.Mvc.Core.Fluent;
-@using X.PagedList.Web.Common
 
 @{
     ViewData["Title"] = "Index";
-    //var pagedList = ViewBag.OnePageOfProducts;
-
     ProductListViewModel pager = new ProductListViewModel();
-
-    //int pageNo = 0;
-    //if (ViewBag.Pager != null)
-    //{
-    //    pager = ViewBag.Pager;
-    //    pageNo = pager.CurrentPage;
-    //}
-
 }
 <link href="/css/PagedList.css" rel="stylesheet" type="text/css" />
 
@@ -28,82 +14,102 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+<div class="container">
+    <div class="row">
+        <form asp-controller="Products" asp-action="Index" method="Get">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="SearchString" class="control-label"></label>
+                    <input asp-for="SearchString" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="SelectedBrand" class="control-label"></label>
+                    <select asp-for="SelectedBrand" asp-items="Model.Brands" class="form-control">
+                        <option value="">All</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="SelectedCategory" class="control-label"></label>
+                    <select asp-for="SelectedCategory" asp-items="Model.Categories" class="form-control">
+                        <option value="">All</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="SelectedYear" class="control-label"></label>
+                    <select asp-for="SelectedYear" asp-items="Model.ModelYears" class="form-control">
+                        <option value="">All</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Filter" class="btn btn-primary" />
+            </div>
 
-@*<form asp-controller="Products" asp-action="Index" method="Get">
-    <p>
-    Product Name : <input asp-for="SearchString" />
-
-    Brand Name: 
-    <select asp-for="SelectedBrand" asp-items="Model.Brands"> 
-    <option value="">All</option>
-    </select>
-    Category Name : 
-    <select asp-for="SelectedCategory" asp-items="Model.Categories">
-    <option value="">All</option>
-    </select>
-    Model Year :
-    <select asp-for="SelectedYear" asp-items="Model.ModelYears">
-    <option value="">All</option>
-    </select>
-
-    <input type="submit" value="Filter" /> 
-
-    </p>
-</form>
-*@    
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Products[0].ProductName)
-                
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Products[0].BrandId)
-                
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Products[0].CategoryId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Products[0].ModelYear)
-                
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Products[0].ListPrice)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Products)
-        {
+        </form>
+    </div>
+</div>
+<div class="row">
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ProductName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Brand.BrandName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Category.CategoryName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ModelYear)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ListPrice)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
-                </td>
+                <th>
+                    @Html.DisplayNameFor(model => model.Products[0].ProductName)
+
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Products[0].BrandId)
+
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Products[0].CategoryId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Products[0].ModelYear)
+
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Products[0].ListPrice)
+                </th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Products)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProductName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Brand.BrandName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Category.CategoryName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ModelYear)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ListPrice)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @Html.PagedListPager(Model.Products, page => Url.Action("Index", new { pagenumber = page, SearchString = Model.SearchString, Model.SelectedBrand
+    , Model.SelectedCategory, Model.SelectedYear }), new X.PagedList.Web.Common.PagedListRenderOptions{
 
-@Html.PagedListPager((IPagedList) pager.Products, page => Url.Action("Index", new { page }) )
-
-@*<partial name="_pager" model="@pager" />*@
+    })
+    <
+</div>

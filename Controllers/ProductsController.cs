@@ -1,18 +1,11 @@
 ﻿#nullable disable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using ReflectionIT.Mvc.Paging;
 using StoreProject.Data;
 using StoreProject.Models;
 using StoreProject.ViewModels;
 using X.PagedList;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace StoreProject.Controllers
 {
@@ -30,45 +23,51 @@ namespace StoreProject.Controllers
             ProductListViewModel productListViewModel, int? page = 1)
         {
             
-            //use Linq to get list of Brands
-            var brandQuery = from b in _context.Brand
-                             select b;
-
-            var catecgoryQuery = from c in _context.Category
-                                 select c;
-
             IQueryable<Product> products = _context.Product
                             .Include("Brand")
+                            .Include("Category");
 
-                            .Include("Category")
-                            .OrderBy(p => p.ProductName);
-
-
-            if (!string.IsNullOrEmpty(productListViewModel. SearchString))
+            if (!string.IsNullOrEmpty(productListViewModel.SearchString))
             {
                 products = products.Where(s => s.ProductName.Contains(productListViewModel.SearchString));
             }
-            if (productListViewModel.SelectedBrand > 0 )
+            if (productListViewModel.SelectedBrand > 0)
             {
                 products = products.Where(x => x.BrandId == productListViewModel.SelectedBrand);
             }
 
-            if (productListViewModel.SelectedCategory > 0 )
+            if (productListViewModel.SelectedCategory > 0)
             {
                 products = products.Where(y => y.CategoryId == productListViewModel.SelectedCategory);
             }
 
-            if (productListViewModel.SelectedYear > 0 )
+            if (productListViewModel.SelectedYear > 0)
             {
                 products = products.Where(z => z.ModelYear == productListViewModel.SelectedYear);
             }
 
+            int pageSize = 10;
+            productListViewModel.PageNumber = productListViewModel.PageNumber <= 0 ? 1 : productListViewModel.PageNumber;
+
+            var count = await products.CountAsync();
+            var items = await products.OrderBy(c => c.ProductName)
+                .Skip((productListViewModel.PageNumber - 1) * pageSize) // 1 skip 10, 2 1 * 10 = 20, 3 2 * 10 = 20
+                .Take(pageSize).ToListAsync();
+
+            productListViewModel.Products = new StaticPagedList<Product>(items, productListViewModel.PageNumber, pageSize, count);
+
+            await FillLookup(productListViewModel);
+            return View(productListViewModel);
+        }
+
+        private async Task FillLookup(ProductListViewModel productListViewModel)
+        {
             productListViewModel.Brands = await _context.Brand.Select
-                        (a => new SelectListItem()
-                        {
-                            Text = a.BrandName,
-                            Value = a.BrandId.ToString()
-                        }).ToListAsync();
+                                    (a => new SelectListItem()
+                                    {
+                                        Text = a.BrandName,
+                                        Value = a.BrandId.ToString()
+                                    }).ToListAsync();
 
             productListViewModel.Categories = await _context.Category.Select
                     (c => new SelectListItem(c.CategoryName, c.CategoryId.ToString())).ToListAsync();
@@ -79,46 +78,6 @@ namespace StoreProject.Controllers
                         Text = y.ModelYear.ToString(),
                         Value = y.ModelYear.ToString()
                     }).Distinct().ToListAsync();
-
-            productListViewModel.Products = await products.ToListAsync();
-
-            var pageNumber = page ?? 1;
-
-            var onepageOfProducts = products.ToPagedList(pageNumber, 25);
-
-            ViewBag.Ones = onepageOfProducts;
-
-            return View(productListViewModel);
-
-
-            //*************************************************
-            // for paging
-            //const int pageSize = 10;
-            //if (productListViewModel.PageNumber < 1)
-            //{
-            //    productListViewModel.PageNumber = 1;
-            //}
-
-            //int resultCount = products.Count();
-
-            //var pager = new ProductListViewModel(rescCount, productListViewModel.PageNumber, pageSize);
-
-            //int recordSkip = (productListViewModel.PageNumber - 1) * pageSize;
-
-
-            /* productListViewModel.Products = products
-                                             .Include(b => b.Brand)
-                                             .Include("Category")
-                                             .OrderBy(p => p.ProductName)
-                                             .Skip(recSkip)
-                                             .Take(pager.PageSize)
-                                             .ToList();
-
-             ViewBag.Pager = pager; */
-            //***************************************************
-
-
-
         }
 
         // GET: Products/Details/5
