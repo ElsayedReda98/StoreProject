@@ -6,8 +6,11 @@ namespace StoreProject.Models
     public class Product
     {
         public int ProductId { get; set; }
-        
+
+        [Required]
         [Display(Name ="Product Name")]
+        [StringLength(50, MinimumLength = 3)]
+        
         public string ProductName { get; set; }
         
         [Display(Name ="Brand")]
@@ -20,7 +23,7 @@ namespace StoreProject.Models
         public short ModelYear { get; set; }
         
         [Display(Name ="List Price")]
-        [Range(1,1000)]
+        [Range(0.1,1000)]
         public decimal ListPrice { get; set; }
 
         // RelationShips

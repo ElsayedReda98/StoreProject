@@ -1,8 +1,13 @@
-﻿@model IEnumerable<StoreProject.Models.Category>
+﻿@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@*@model IEnumerable<StoreProject.Models.Category>*@
+
+@model StoreProject.ViewModels.CategoryListViewModel
 
 @{
     ViewData["Title"] = "Index";
 }
+<link href="/css/pagedList.css" rel="styleSheet" type="text/css" />
 
 <h1>Index</h1>
 
@@ -10,22 +15,25 @@
     <a asp-action="Create">Create New</a>
 </p>
 <form asp-controler="Categories" asp-action="Index" method="get">
-    <p>
-        Category Name : <input type="text" name="searchString" />
-        <input type="submit" value="Filter" />
-    </p>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label asp-for="SearchString" class="control-label"></label>
+            <input asp-for="SearchString" class="form-control" /> 
+            <input type="submit" value="Filter" class="btn btn-primary" />
+         </div>  
+    </div>
 </form>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.CategoryName)
+                @Html.DisplayNameFor(model => model.Categories[0].CategoryName)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Categories) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.CategoryName)
@@ -39,3 +47,10 @@
 }
     </tbody>
 </table>
+@* default
+@Html.PagedListPager(Model.Categories, page => Url.Action("Index", 
+new {pageNumber = page, SearchString = Model.SearchString}))
+*@
+
+@Html.PagedListPager(Model.Categories, page => Url.Action("Index",
+new {pageNumber = page, Model.SearchString}), PagedListRenderOptions.ClassicPlusFirstAndLast )

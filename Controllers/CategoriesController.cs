@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StoreProject.Data;
 using StoreProject.Models;
+using StoreProject.ViewModels;
+using X.PagedList;
 
 namespace StoreProject.Controllers
 {
@@ -16,7 +18,7 @@ namespace StoreProject.Controllers
 
         public CategoriesController(StoreProjectContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
         // Index Before Search
         //*********************************************************
@@ -28,16 +30,28 @@ namespace StoreProject.Controllers
         //*********************************************************
         
         // Index After Search
-        public async Task<IActionResult> Index(string searchString)
+        public async Task<IActionResult> Index(CategoryListViewModel categoryListViewModel)
         {
             var categories = from c in _context.Category
                            select c;
 
-            if (!string.IsNullOrEmpty(searchString))
+            if (!string.IsNullOrEmpty(categoryListViewModel.SearchString))
             {
-               categories = categories.Where(c => c.CategoryName.Contains(searchString)); 
+               categories = categories.Where(c => c.CategoryName.Contains(categoryListViewModel.SearchString)); 
             }
-            return View(await categories.ToListAsync());
+
+            int pageSize = 5;
+            categoryListViewModel.PageNumber = categoryListViewModel.PageNumber <= 0 ? 1 : categoryListViewModel.PageNumber;
+
+            var count = await categories.CountAsync();
+            var item = await categories.OrderBy(c => c.CategoryName)
+                .Skip((categoryListViewModel.PageNumber -1 ) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+
+            categoryListViewModel.Categories = categories.ToPagedList(categoryListViewModel.PageNumber, pageSize);
+            return View(categoryListViewModel);
         }
 
 

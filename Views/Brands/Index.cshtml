@@ -22,7 +22,7 @@
                 <div class="form-group">
                     <label asp-for="SearchString" class="control-label"></label>
                     <input asp-for="SearchString" class="form-control"  />
-                    <input type="submit" value="Filter" />
+                    <input type="submit" value="Filter" class="btn btn-primary" />
                 </div>
             </div>
         </form>
@@ -60,16 +60,16 @@
     *@
     @*Minimal paging control*@
     @Html.PagedListPager(Model.Brands, page => Url.Action("Index", 
-    new {pageNumber = page}),  PagedListRenderOptions.Classic )
+    new {pageNumber = page, Model.SearchString}),  PagedListRenderOptions.Classic )
 
     @*Custom paging control*@
     @Html.PagedListPager(Model.Brands, page => Url.Action("Index", 
-    new {pageNumber = page}), new PagedListRenderOptions { LinkToFirstPageFormat = "<< primera",LinkToPreviousPageFormat = "< Previous", LinkToNextPageFormat = "Next >", LinkToLastPageFormat = "&Uacute;ltima >> "})
+    new {pageNumber = page, Model.SearchString}), new PagedListRenderOptions { LinkToFirstPageFormat = "<< primera",LinkToPreviousPageFormat = "< Previous", LinkToNextPageFormat = "Next >", LinkToLastPageFormat = "&Uacute;ltima >> "})
     @*Custom paging control*@
     @Html.PagedListPager(Model.Brands, page => Url.Action("Index", 
-    new {pageNumber = page}), new PagedListRenderOptions { FunctionToDisplayEachPageNumber = page => ((page -1)* 4 + 1).ToString() + "_" + (((page -1 ) * 4) + 4 ).ToString(), MaximumPageNumbersToDisplay =5 })   
+    new {pageNumber = page, Model.SearchString}), new PagedListRenderOptions { FunctionToDisplayEachPageNumber = page => ((page -1)* 4 + 1).ToString() + "_" + (((page -1 ) * 4) + 4 ).ToString(), MaximumPageNumbersToDisplay =5 })   
     @*Custom paging control*@
     @Html.PagedListPager(Model.Brands, page => Url.Action("Index", 
-    new {pageNumber = page}), new PagedListRenderOptions {DelimiterBetweenPageNumbers = "|",DisplayLinkToFirstPage = PagedListDisplayMode.IfNeeded })
+    new {pageNumber = page,  Model.SearchString}), new PagedListRenderOptions {DelimiterBetweenPageNumbers = "|",DisplayLinkToFirstPage = PagedListDisplayMode.IfNeeded })
 
 </div>
