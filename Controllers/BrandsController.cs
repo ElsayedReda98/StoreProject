@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StoreProject.Data;
 using StoreProject.Models;
+using StoreProject.ViewModels;
+using X.PagedList;
 
 namespace StoreProject.Controllers
 {
@@ -16,7 +18,7 @@ namespace StoreProject.Controllers
 
         public BrandsController(StoreProjectContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         // GET: Brands
@@ -25,16 +27,26 @@ namespace StoreProject.Controllers
         //    return View(await _context.Brand.ToListAsync());
         //}
         //************************************
-        public async Task<IActionResult> Index(string searchString)
+        public async Task<IActionResult> Index(BrandListViewModel brandListViewModel)
         {
             var brands = from b in _context.Brand
                          select b;
 
-            if (!string.IsNullOrEmpty(searchString))
+            if (!string.IsNullOrEmpty(brandListViewModel.SearchString))
             {
-                brands = brands.Where(s => s.BrandName.Contains(searchString));
+                brands = brands.Where(s => s.BrandName.Contains(brandListViewModel.SearchString));
             }
-            return View(await brands.ToListAsync());
+            int pageSize = 4;
+            brandListViewModel.PageNumber = brandListViewModel.PageNumber <=0 ? 1 : brandListViewModel.PageNumber;
+
+            var count = await brands.CountAsync();
+            var items = await brands.OrderBy(b => b.BrandName)
+                  .Skip((brandListViewModel.PageNumber -1)* pageSize )
+                  .Take(pageSize).ToListAsync();
+
+            brandListViewModel.Brands = new StaticPagedList<Brand>(items, brandListViewModel.PageNumber, pageSize, count);
+
+            return View(brandListViewModel);
         }
 
         // GET: Brands/Details/5

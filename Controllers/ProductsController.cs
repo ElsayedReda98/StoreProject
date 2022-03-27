@@ -20,7 +20,7 @@ namespace StoreProject.Controllers
 
         //GET : Products
         public async Task<IActionResult> Index(
-            ProductListViewModel productListViewModel, int? page = 1)
+            ProductListViewModel productListViewModel)
         {
             
             IQueryable<Product> products = _context.Product
@@ -51,7 +51,7 @@ namespace StoreProject.Controllers
 
             var count = await products.CountAsync();
             var items = await products.OrderBy(c => c.ProductName)
-                .Skip((productListViewModel.PageNumber - 1) * pageSize) // 1 skip 10, 2 1 * 10 = 20, 3 2 * 10 = 20
+                .Skip((productListViewModel.PageNumber - 1) * pageSize) // 1 skip 0, 2 => 1 * 10 = 10, 3 => 2 * 10 = 20
                 .Take(pageSize).ToListAsync();
 
             productListViewModel.Products = new StaticPagedList<Product>(items, productListViewModel.PageNumber, pageSize, count);
@@ -85,7 +85,6 @@ namespace StoreProject.Controllers
         {
             if (id == null)
             {
-                //return NotFound();
                 return BadRequest();
             }
 
@@ -93,7 +92,7 @@ namespace StoreProject.Controllers
                 .FirstOrDefaultAsync(m => m.ProductId == id);
             if (product == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             return View(product);

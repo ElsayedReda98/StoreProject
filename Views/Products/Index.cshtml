@@ -107,9 +107,9 @@
             }
         </tbody>
     </table>
-    @Html.PagedListPager(Model.Products, page => Url.Action("Index", new { pagenumber = page, SearchString = Model.SearchString, Model.SelectedBrand
-    , Model.SelectedCategory, Model.SelectedYear }), new X.PagedList.Web.Common.PagedListRenderOptions{
-
-    })
-    <
+    @Html.PagedListPager(Model.Products, page => Url.Action("Index", 
+    new { pagenumber = page, SearchString = Model.SearchString, Model.SelectedBrand
+    , Model.SelectedCategory, Model.SelectedYear }), 
+    new X.PagedList.Web.Common.PagedListRenderOptions{})
+    
 </div>
