@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StoreProject.Data;
 using StoreProject.Models;
+using StoreProject.ViewModels;
 
 namespace StoreProject.Controllers
 {
@@ -27,15 +28,24 @@ namespace StoreProject.Controllers
         //    return View(await _context.Customer.ToListAsync());
         //}
         //************************************************
-        public async Task<IActionResult> Index(string searchString)
+        public async Task<IActionResult> Index(CustomerListViewModel customerListViewModel)
         {
             var customers = from c in _context.Customer
                             select c;
-            if (!string.IsNullOrEmpty(searchString))
+            if (!string.IsNullOrEmpty(customerListViewModel.NameSearch))
             {
-                customers = customers.Where(s => s.FirstName.Contains(searchString));
+                customers = customers.Where(s => s.FirstName.Contains(customerListViewModel.NameSearch)
+                                              || s.LastName.Contains(customerListViewModel.NameSearch) );
             }
-            return View(await customers.ToListAsync());
+            if (!string.IsNullOrEmpty(customerListViewModel.EmailSearch))
+            {
+                customers = customers.Where(c => c.Email.Contains(customerListViewModel.EmailSearch)); 
+            }
+            if (!string.IsNullOrEmpty(customerListViewModel.PhoneSearch))
+            {
+                customers = customers.Where(c => c.Phone.Contains(customerListViewModel.PhoneSearch));
+            }
+            return View(await customers.ToLicstAsync());
         }
         // GET: Customers/Details/5
         public async Task<IActionResult> Details(int? id)
