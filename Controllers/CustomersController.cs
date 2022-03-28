@@ -45,7 +45,8 @@ namespace StoreProject.Controllers
             {
                 customers = customers.Where(c => c.Phone.Contains(customerListViewModel.PhoneSearch));
             }
-            return View(await customers.ToLicstAsync());
+            customerListViewModel.Customers =await customers.ToListAsync();
+            return View(customerListViewModel);
         }
         // GET: Customers/Details/5
         public async Task<IActionResult> Details(int? id)
