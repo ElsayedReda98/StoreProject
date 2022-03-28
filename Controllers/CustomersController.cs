@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using StoreProject.Data;
 using StoreProject.Models;
 using StoreProject.ViewModels;
+using X.PagedList;
 
 namespace StoreProject.Controllers
 {
@@ -45,7 +46,24 @@ namespace StoreProject.Controllers
             {
                 customers = customers.Where(c => c.Phone.Contains(customerListViewModel.PhoneSearch));
             }
-            customerListViewModel.Customers =await customers.ToListAsync();
+            int pageSize = 10;
+            customerListViewModel.PageNumber = customerListViewModel.PageNumber <= 0 ? 1 : customerListViewModel.PageNumber;
+
+            var count = await customers.CountAsync();
+            var items = await customers.OrderBy(c => c.FirstName)
+                .Skip((customerListViewModel.PageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // manual pagination
+            customerListViewModel.Customers = new StaticPagedList<Customer>
+                (items, customerListViewModel.PageNumber, pageSize, count);
+
+            //implicit pagination
+            //customerListViewModel.Customers = customers
+              //  .ToPagedList(customerListViewModel.PageNumber, pageSize);
+
+            //customerListViewModel.Customers =await customers.ToListAsync();
             return View(customerListViewModel);
         }
         // GET: Customers/Details/5

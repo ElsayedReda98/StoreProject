@@ -10,7 +10,6 @@ namespace StoreProject.Models
         [Required]
         [Display(Name ="Product Name")]
         [StringLength(50, MinimumLength = 3)]
-        
         public string ProductName { get; set; }
         
         [Display(Name ="Brand")]

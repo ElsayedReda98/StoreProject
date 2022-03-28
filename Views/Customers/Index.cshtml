@@ -1,11 +1,14 @@
-﻿@*@model IEnumerable<StoreProject.Models.Customer>*@
+﻿@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@*@model IEnumerable<StoreProject.Models.Customer>*@
 @model StoreProject.ViewModels.CustomerListViewModel
 
 @{
     ViewData["Title"] = "Index";
 }
 
-
+@*for design*@
+<link href="/css/pagedList.css" rel="stylesheet" type="text/css" />
 
 <h1>Index</h1>
 
@@ -36,7 +39,7 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
-
+<div class="row">
 <table class="table">
     <thead>
         <tr>
@@ -103,3 +106,9 @@
 }
     </tbody>
 </table>
+
+@*for pagination *@
+@Html.PagedListPager(Model.Customers, page => Url.Action("Index",
+new {pageNumber = page,SearchName = Model.NameSearch, Model.EmailSearch, Model.PhoneSearch}),
+PagedListRenderOptions.ClassicPlusFirstAndLast)
+</div>

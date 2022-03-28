@@ -1,4 +1,5 @@
 ﻿using StoreProject.Models;
+using X.PagedList;
 
 namespace StoreProject.ViewModels
 {
@@ -7,7 +8,8 @@ namespace StoreProject.ViewModels
         public string NameSearch { get; set; }
         public string EmailSearch { get; set; }
         public string PhoneSearch { get; set; }
-        public List<Customer> Customers { get; set; }
+        public int PageNumber { get; set; } = 1;
+        public IPagedList<Customer> Customers { get; set; }
 
     }
 }

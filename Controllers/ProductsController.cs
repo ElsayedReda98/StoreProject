@@ -54,7 +54,8 @@ namespace StoreProject.Controllers
                 .Skip((productListViewModel.PageNumber - 1) * pageSize) // 1 skip 0, 2 => 1 * 10 = 10, 3 => 2 * 10 = 20
                 .Take(pageSize).ToListAsync();
 
-            productListViewModel.Products = new StaticPagedList<Product>(items, productListViewModel.PageNumber, pageSize, count);
+            productListViewModel.Products = new StaticPagedList<Product>
+                (items, productListViewModel.PageNumber, pageSize, count);
 
             await FillLookup(productListViewModel);
             return View(productListViewModel);

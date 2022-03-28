@@ -58,18 +58,25 @@
     @Html.PagedListPager(Model.Brands, page => Url.Action("Index", 
     new {pageNumber = page, SearchString = Model.SearchString,}))
     *@
+    
     @*Minimal paging control*@
     @Html.PagedListPager(Model.Brands, page => Url.Action("Index", 
-    new {pageNumber = page, Model.SearchString}),  PagedListRenderOptions.Classic )
+    new {pageNumber = page, Model.SearchString}),  
+    PagedListRenderOptions.Classic )
 
     @*Custom paging control*@
     @Html.PagedListPager(Model.Brands, page => Url.Action("Index", 
-    new {pageNumber = page, Model.SearchString}), new PagedListRenderOptions { LinkToFirstPageFormat = "<< primera",LinkToPreviousPageFormat = "< Previous", LinkToNextPageFormat = "Next >", LinkToLastPageFormat = "&Uacute;ltima >> "})
+    new {pageNumber = page, Model.SearchString}),
+    new PagedListRenderOptions { LinkToFirstPageFormat = "<< primera",LinkToPreviousPageFormat = "< Previous", LinkToNextPageFormat = "Next >", LinkToLastPageFormat = "&Uacute;ltima >> "})
+    
     @*Custom paging control*@
     @Html.PagedListPager(Model.Brands, page => Url.Action("Index", 
-    new {pageNumber = page, Model.SearchString}), new PagedListRenderOptions { FunctionToDisplayEachPageNumber = page => ((page -1)* 4 + 1).ToString() + "_" + (((page -1 ) * 4) + 4 ).ToString(), MaximumPageNumbersToDisplay =5 })   
+    new {pageNumber = page, Model.SearchString}), 
+    new PagedListRenderOptions { FunctionToDisplayEachPageNumber = page => ((page -1)* 4 + 1).ToString() + "_" + (((page -1 ) * 4) + 4 ).ToString(), MaximumPageNumbersToDisplay =5 })   
+    
     @*Custom paging control*@
     @Html.PagedListPager(Model.Brands, page => Url.Action("Index", 
-    new {pageNumber = page,  Model.SearchString}), new PagedListRenderOptions {DelimiterBetweenPageNumbers = "|",DisplayLinkToFirstPage = PagedListDisplayMode.IfNeeded })
+    new {pageNumber = page,  Model.SearchString}), 
+    new PagedListRenderOptions {DelimiterBetweenPageNumbers = "|",DisplayLinkToFirstPage = PagedListDisplayMode.IfNeeded })
 
 </div>
