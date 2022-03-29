@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StoreProject.Data;
 using StoreProject.Models;
+using StoreProject.ViewModels;
+using X.PagedList;
 
 namespace StoreProject.Controllers
 {
@@ -17,14 +19,94 @@ namespace StoreProject.Controllers
 
         public StaffsController(StoreProjectContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         // GET: Staffs
-        public async Task<IActionResult> Index()
+        //public async Task<IActionResult> Index()
+        //{
+        //    return View(await _context.Staff.ToListAsync());
+        //}
+        //**************************************************************
+
+        public async Task<IActionResult> Index(StaffListViewModel staffListViewModel)
         {
-            return View(await _context.Staff.ToListAsync());
+            //var staffList = from s in _context.Staff
+            //                select s;
+            //*******************************************
+            IQueryable<Staff> staffList = _context.Staff
+                                .Include(s => s.Store);
+                                       
+            //*********************************************
+
+            //if (!string.IsNullOrEmpty(staffListViewModel.NameSearch))
+            //{
+            //    staffList = staffList.Where(s => s.FirstName.Contains(staffListViewModel.NameSearch)
+            //                                   || s.LastName.Contains(staffListViewModel.NameSearch));
+            //}
+            //******************************************************
+            /* error as FullName prop not mapped to database
+            if (!string.IsNullOrEmpty(staffListViewModel.NameSearch))
+            {
+                staffList = staffList.Where(s => s.FullName.Contains(staffListViewModel.NameSearch));
+            }
+            */
+            if (!string.IsNullOrEmpty(staffListViewModel.NameSearch))
+            {
+                staffList = staffList.Where(s => (s.FirstName + s.LastName).Contains(staffListViewModel.NameSearch));
+            }
+            if (!string.IsNullOrEmpty(staffListViewModel.EmailSearch))
+            {
+                staffList = staffList.Where(s => s.Email.Contains(staffListViewModel.EmailSearch));
+            }
+            if (!string.IsNullOrEmpty(staffListViewModel.PhoneSearch))
+            {
+                staffList = staffList.Where(s => s.Phone.Contains(staffListViewModel.PhoneSearch));
+            }
+            if (staffListViewModel.ActiveSearch > 0)
+            {
+                staffList = staffList.Where(s => s.Active == staffListViewModel.ActiveSearch);
+            }
+            if (staffListViewModel.SelectedManager > 0)
+            {
+                staffList = staffList.Where(s => s.ManagerId == staffListViewModel.SelectedManager);
+            }
+            if (staffListViewModel.SelectedStore > 0)
+            {
+                staffList = staffList.Where(s => s.StoreId == staffListViewModel.SelectedStore);
+            }
+            int pageSize = 10;
+            staffListViewModel.PageNumber = staffListViewModel.PageNumber <= 0 ? 1 : staffListViewModel.PageNumber; 
+            var count =await staffList.CountAsync();
+            var  items = await staffList.OrderBy(s => s.FirstName)
+                .Skip((staffListViewModel.PageNumber -1 ) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            staffListViewModel.Staffs = new StaticPagedList<Staff>
+                (items, staffListViewModel.PageNumber, pageSize, count); ;
+
+            await FileLookUp(staffListViewModel);
+            return View(staffListViewModel);
         }
+        private async Task FileLookUp(StaffListViewModel staffListViewModel)
+        {
+            staffListViewModel.Managers = await _context.Staff
+                .Select(s => new SelectListItem(s.FirstName, s.ManagerId.ToString()))
+                .Distinct()
+                .ToListAsync();
+
+            staffListViewModel.Stores = await _context.Store
+                .Select(s => new SelectListItem(s.StoreName, s.StoreId.ToString()))
+                .Distinct()
+                .ToListAsync();
+            staffListViewModel.ActiveList = await _context.Staff
+                .Select(s => new SelectListItem(s.Active.ToString(), s.Active.ToString()))
+                .Distinct()
+                .ToListAsync();
+        }
+
+        
 
         // GET: Staffs/Details/5
         public async Task<IActionResult> Details(int? id)

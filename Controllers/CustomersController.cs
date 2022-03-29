@@ -46,6 +46,7 @@ namespace StoreProject.Controllers
             {
                 customers = customers.Where(c => c.Phone.Contains(customerListViewModel.PhoneSearch));
             }
+
             int pageSize = 10;
             customerListViewModel.PageNumber = customerListViewModel.PageNumber <= 0 ? 1 : customerListViewModel.PageNumber;
 
