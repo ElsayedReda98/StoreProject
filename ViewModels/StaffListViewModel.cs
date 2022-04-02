@@ -9,7 +9,7 @@ namespace StoreProject.ViewModels
         public string NameSearch { get; set; }
         public string EmailSearch { get; set; }
         public string PhoneSearch { get; set; }
-        public byte ActiveSearch { get; set; }
+        public bool ActiveSearch { get; set; }
         public int SelectedManager { get; set; }
         public int SelectedStore { get; set; }
         public int PageNumber { get; set; } = 1;

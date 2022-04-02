@@ -44,9 +44,11 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="ActiveSearch" class="control-label"></label>
-                    <Select asp-for="ActiveSearch" asp-items="Model.ActiveList" class="form-control">
+                    @*<Select asp-for="ActiveSearch" asp-items="Model.ActiveList" class="form-control">
                         <option>All</option>
-                    </Select>   
+                    </Select>*@
+                    @*<input  asp-for="ActiveSearch" type="checkbox" class="form-control" />*@
+                    @Html.CheckBoxFor(m => m.ActiveSearch)
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Filter" class="btn btn-primary"  />
@@ -107,6 +109,8 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ManagerId)
+                
+
                 
             </td>
             <td>

@@ -35,9 +35,10 @@ namespace StoreProject.Controllers
             //                select s;
             //*******************************************
             IQueryable<Staff> staffList = _context.Staff
+                                
                                 .Include(s => s.Store);
                                        
-            //*********************************************
+            //*******************************************************************************************
 
             //if (!string.IsNullOrEmpty(staffListViewModel.NameSearch))
             //{
@@ -51,6 +52,7 @@ namespace StoreProject.Controllers
                 staffList = staffList.Where(s => s.FullName.Contains(staffListViewModel.NameSearch));
             }
             */
+            //***********************************************************************************************
             if (!string.IsNullOrEmpty(staffListViewModel.NameSearch))
             {
                 staffList = staffList.Where(s => (s.FirstName + s.LastName).Contains(staffListViewModel.NameSearch));
@@ -63,10 +65,10 @@ namespace StoreProject.Controllers
             {
                 staffList = staffList.Where(s => s.Phone.Contains(staffListViewModel.PhoneSearch));
             }
-            if (staffListViewModel.ActiveSearch > 0)
-            {
-                staffList = staffList.Where(s => s.Active == staffListViewModel.ActiveSearch);
-            }
+            //if (staffListViewModel.ActiveSearch > 0)
+            //{
+            //    staffList = staffList.Where(s => s.Active == staffListViewModel.ActiveSearch);
+            //}
             if (staffListViewModel.SelectedManager > 0)
             {
                 staffList = staffList.Where(s => s.ManagerId == staffListViewModel.SelectedManager);
@@ -76,9 +78,10 @@ namespace StoreProject.Controllers
                 staffList = staffList.Where(s => s.StoreId == staffListViewModel.SelectedStore);
             }
             int pageSize = 10;
-            staffListViewModel.PageNumber = staffListViewModel.PageNumber <= 0 ? 1 : staffListViewModel.PageNumber; 
+            staffListViewModel.PageNumber = staffListViewModel.PageNumber <= 0 ? 1 : staffListViewModel.PageNumber;
+            
             var count =await staffList.CountAsync();
-            var  items = await staffList.OrderBy(s => s.FirstName)
+            var  items = await staffList.OrderBy(s => s.StaffId)
                 .Skip((staffListViewModel.PageNumber -1 ) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -127,8 +130,13 @@ namespace StoreProject.Controllers
         }
 
         // GET: Staffs/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create(StaffListViewModel staffListViewModel)
         {
+            //await FileLookUp(staffListViewModel);
+
+            ViewBag.Stores = new SelectList(_context.Store.OrderBy(s => s.StoreId).Distinct().ToList(), "StoreId", "StoreName");
+            ViewBag.Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "ManagerId", "FullName");
+            ViewBag.Actives = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "Active", "Active");
             return View();
         }
 
@@ -137,14 +145,39 @@ namespace StoreProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("StaffId,FirstName,LastName,Email,Phone,Active,StoreId,ManagerId")] Staff staff)
+        public async Task<IActionResult> Create([Bind("StaffId,FirstName,LastName,Email,Phone,Active,StoreId,ManagerId")] Staff staff, StaffListViewModel staffListViewModel)
         {
+            ViewBag.Stores = new SelectList(_context.Store.OrderBy(s => s.StoreId).Distinct().ToList(), "StoreId", "StoreName");
+            ViewBag.Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "ManagerId", "FullName");
+            ViewBag.Actives = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "Active", "Active");
+
+
             if (ModelState.IsValid)
             {
+                var emailExist = _context.Staff.Any(e => e.Email == staff.Email);
+                var phoneExist = _context.Staff.Any(p => p.Phone == staff.Phone);
+                if (emailExist)
+                {
+                    ModelState.AddModelError("Email", "This Email is Already Exist");
+                    return View();
+                }
+                else if (phoneExist)
+                {
+                    ModelState.AddModelError("Phone", "This Phone is Already Exist");
+                    return View();
+                }
+                
                 _context.Add(staff);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
+                
             }
+            //await FileLookUp(staffListViewModel);
+            ViewBag.Stores = new SelectList(_context.Store.OrderBy(s => s.StoreId).Distinct().ToList(), "StoreId", "StoreName");
+            ViewBag.Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "ManagerId", "FullName");
+            ViewBag.Actives = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "Active", "Active");
+
+
             return View(staff);
         }
 

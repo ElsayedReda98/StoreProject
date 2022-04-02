@@ -29,7 +29,9 @@ namespace StoreProject.Models
         public string Email { get; set; }
 
 
-        [StringLength(50, MinimumLength = 3)]
+        [StringLength(14, MinimumLength = 11)]
+        [DataType(DataType.PhoneNumber)]
+        [Phone]
         public string? Phone { get; set; }
         
         [Required]
