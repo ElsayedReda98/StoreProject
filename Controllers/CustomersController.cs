@@ -102,15 +102,17 @@ namespace StoreProject.Controllers
             {
                 var fNameExist = _context.Customer.Any(c => c.FirstName == customer.FirstName);
                 var lNameExist = _context.Customer.Any(l => l.LastName == customer.LastName);
+                //var nameExist = _context.Customer.Any(n => n.FullName == customer.FullName);
                 var emailExist = _context.Customer.Any(l => l.Email == customer.Email);
-                if (fNameExist && emailExist)
+                if (fNameExist & lNameExist )
                 {
                     ModelState.AddModelError("FirstName", "Can not create customer, This Customer is Already Exist ");
+                    ModelState.AddModelError("LastName", "Can not create customer, This Customer is Already Exist ");
                     return View(customer);
                 }
-                else if (lNameExist )
+                else if (emailExist)
                 {
-                    ModelState.AddModelError("LastName", "Can't create customer, This Customer is Already Exist ");
+                    ModelState.AddModelError("Email", "Can't create Customer, This Email is Already Exist ");
                     return View(customer);
                 }
                 _context.Add(customer);

@@ -33,5 +33,13 @@ namespace StoreProject.Models
         [Display(Name ="Zip Code")]
         [StringLength(50, MinimumLength = 5)]
         public string ZipCode { get; set; }
+
+        public string FullName
+        {
+            get
+            {
+                return FirstName + " " + LastName;
+            }
+        }
     }
 }
