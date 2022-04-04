@@ -105,6 +105,8 @@ namespace StoreProject.Data
                 builder.Property(s => s.ManagerId).HasColumnName("manager_id");
             });
 
+            
+
             modelBuilder.Entity<Store>(builder =>
             {
                 builder.ToTable("stores", "sales");
@@ -144,6 +146,35 @@ namespace StoreProject.Data
                 builder.Property(s => s.ProductId).HasColumnName("product_id");
                 builder.Property(s => s.Quantity).HasColumnName("QUANTITY");
             });
+
+            // one to many rsh between order and staff
+            modelBuilder.Entity<Staff>()
+                .HasMany<Order>(s => s.Orders)
+                .WithOne(s => s.Staff)
+                .HasForeignKey(s => s.StaffId);
+
+            // one to many rsh between staff and staff
+            modelBuilder.Entity<Staff>()
+                .HasOne<Staff>(s => s.Manager)
+                .WithMany(s => s.Managers)
+                .HasForeignKey(s => s.ManagerId);
+
+
+            //// one to many rsh between staff and staff
+            //modelBuilder.Entity<Staff>()
+            //    .HasMany<Staff>(s => s.Managers)
+            //    .WithOne(s => s.Manager)
+            //    .HasForeignKey(s => s.ManagerId);
+                
+
+            // one to many rsh between store and staff
+            modelBuilder.Entity<Staff>()
+                .HasOne<Store>(s => s.Store)
+                .WithMany(s => s.Staffs)
+                .HasForeignKey(s => s.StoreId);
+
+
+
 
         }
         public DbSet<StoreProject.Models.Category> Category { get; set; }

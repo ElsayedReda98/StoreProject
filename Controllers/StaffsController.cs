@@ -89,13 +89,13 @@ namespace StoreProject.Controllers
             staffListViewModel.Staffs = new StaticPagedList<Staff>
                 (items, staffListViewModel.PageNumber, pageSize, count); ;
 
-            await FileLookUp(staffListViewModel);
+             FileLookUp(staffListViewModel);
             return View(staffListViewModel);
         }
         private async Task FileLookUp(StaffListViewModel staffListViewModel)
         {
             staffListViewModel.Managers = await _context.Staff
-                .Select(s => new SelectListItem(s.FirstName, s.ManagerId.ToString()))
+                .Select(s => new SelectListItem(s.FirstName,s.ManagerId.ToString()))
                 .Distinct()
                 .ToListAsync();
 
@@ -135,8 +135,9 @@ namespace StoreProject.Controllers
             //await FileLookUp(staffListViewModel);
 
             ViewBag.Stores = new SelectList(_context.Store.OrderBy(s => s.StoreId).Distinct().ToList(), "StoreId", "StoreName");
-            ViewBag.Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "ManagerId", "FullName");
+            ViewBag.Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "ManagerId", "FirstName");
             ViewBag.Actives = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "Active", "Active");
+            
             return View();
         }
 

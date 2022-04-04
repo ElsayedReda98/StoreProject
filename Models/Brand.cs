@@ -10,5 +10,9 @@ namespace StoreProject.Models
         [Display(Name ="Brand Name" )]
         [StringLength(50, MinimumLength = 3)]
         public string BrandName { get; set; }
+
+        // relationship
+        public ICollection<Product> Products { get; set; }
+
     }
 }

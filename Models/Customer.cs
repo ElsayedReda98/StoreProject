@@ -41,5 +41,9 @@ namespace StoreProject.Models
                 return FirstName + " " + LastName;
             }
         }
+
+        // relationship
+        public ICollection<Order> Orders { get; set; }
+
     }
 }

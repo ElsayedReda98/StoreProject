@@ -11,5 +11,12 @@
         public string State { get; set; }
         public string ZipCodde { get; set; }
 
+        // relationship
+        public ICollection<Staff> Staffs { get; set; }
+
+        public Stock Stock { get; set; }
+
+        public ICollection<Order> Orders { get; set; }
+
     }
 }

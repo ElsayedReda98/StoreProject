@@ -37,20 +37,27 @@ namespace StoreProject.Models
         [Required]
         public byte Active { get; set; }
 
-        [Required]
-        [Display(Name = "Store Id")]
-        public int StoreId { get; set; }
-
         
-        [Display(Name = "Manager Id")]
-        public int? ManagerId { get; set; }
 
         ////one to many relationship between staffs and stores
         //staff is many and stores is one
+        [Required]
+        [Display(Name = "Store ")]
+        public int StoreId { get; set; }
         public Store Store { get; set; }
 
+        // *****************
+        
+        [Display(Name = "Manager ")]
+        public int? ManagerId { get; set; }
+        public virtual Staff Manager { get; set; }
 
-        //public Staff StaffProperty { get; set; }
+        public virtual ICollection<Staff> Managers { get; set; }
+
+        //rsh
+        public ICollection<Order> Orders { get; set; }
+
+
 
     }
 }

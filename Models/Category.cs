@@ -11,5 +11,8 @@ namespace StoreProject.Models
         [StringLength(50, MinimumLength = 3)]
         public string CategoryName { get; set; }
 
+        // relationship
+        public ICollection<Product> Products { get; set; }
+
     }
 }

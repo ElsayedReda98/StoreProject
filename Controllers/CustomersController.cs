@@ -51,7 +51,7 @@ namespace StoreProject.Controllers
             customerListViewModel.PageNumber = customerListViewModel.PageNumber <= 0 ? 1 : customerListViewModel.PageNumber;
 
             var count = await customers.CountAsync();
-            var items = await customers.OrderBy(c => c.FirstName)
+            var items = await customers.OrderBy(c => c.CustomerId)
                 .Skip((customerListViewModel.PageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -156,15 +156,16 @@ namespace StoreProject.Controllers
                 {
                     var fNameExist = _context.Customer.Any(f => f.FirstName == customer.FirstName && f.CustomerId != id);
                     var lNameExist = _context.Customer.Any(l => l.LastName == customer.LastName && l.CustomerId != id);
-                    var emailExist = _context.Customer.Any(s => s.Email == customer.Email);
-                    if (fNameExist && emailExist)
+                    var emailExist = _context.Customer.Any(e => e.Email == customer.Email && e.CustomerId != id);
+                    if (fNameExist && lNameExist)
                     {
-                        ModelState.AddModelError("FirstName", "Can't update customer ");
+                        ModelState.AddModelError("FirstName", "Can't update customer, This Name is Already Exist ");
+                        ModelState.AddModelError("LastName", "Can't update customer, This Name is Already Exist  ");
                         return View(customer);
                     }
-                    else if (lNameExist )
+                    else if (emailExist)
                     {
-                        ModelState.AddModelError("LastName", "Can't update customer");
+                        ModelState.AddModelError("Email", "Can't update customer, This Email is Already Exist");
                         return View(customer);
                     }
                     _context.Update(customer);

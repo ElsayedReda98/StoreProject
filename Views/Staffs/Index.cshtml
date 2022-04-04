@@ -108,7 +108,10 @@
                 @Html.DisplayFor(modelItem => item.Store.StoreName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ManagerId)
+               @*@Html.DisplayFor(modelItem => item.ManagerId)*@
+                        @if (item.ManagerId != null) {
+                            @Html.DisplayFor(modelItem => item.Manager.FirstName)
+                        }
                 
 
                 
