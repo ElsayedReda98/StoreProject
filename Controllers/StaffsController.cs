@@ -35,9 +35,11 @@ namespace StoreProject.Controllers
             //                select s;
             //*******************************************
             IQueryable<Staff> staffList = _context.Staff
-                                
+                                .Include(m => m.Manager)
                                 .Include(s => s.Store);
-                                       
+
+            staffListViewModel.ActiveList = (from s in _context.Staff
+                                            select s).Distinct().ToList();
             //*******************************************************************************************
 
             //if (!string.IsNullOrEmpty(staffListViewModel.NameSearch))
@@ -65,10 +67,11 @@ namespace StoreProject.Controllers
             {
                 staffList = staffList.Where(s => s.Phone.Contains(staffListViewModel.PhoneSearch));
             }
-            //if (staffListViewModel.ActiveSearch > 0)
-            //{
-            //    staffList = staffList.Where(s => s.Active == staffListViewModel.ActiveSearch);
-            //}
+            if (staffListViewModel.ActiveBox.HasValue)
+            {
+                byte x  = staffListViewModel.ActiveBox.Value ? (byte)1 : (byte)0;
+                staffList = staffList.Where(s => s.Active == x);
+            }
             if (staffListViewModel.SelectedManager > 0)
             {
                 staffList = staffList.Where(s => s.ManagerId == staffListViewModel.SelectedManager);
@@ -92,6 +95,28 @@ namespace StoreProject.Controllers
              FileLookUp(staffListViewModel);
             return View(staffListViewModel);
         }
+
+        [HttpPost,ActionName("post")]
+        public async Task<IActionResult> IndexPost(StaffListViewModel staffListViewModel)
+        {
+            var countChecked = 0;
+            var countUnChecked = 0;
+            var count = staffListViewModel.ActiveList.Count();
+
+            for (int i = 0; i < count; i++)
+            {
+                if (staffListViewModel.ActiveBox == true)
+                {
+                    countChecked ++;
+                }
+                else
+                {
+                    countUnChecked ++;
+                }
+            }
+            return View(staffListViewModel);
+        }
+        
         private async Task FileLookUp(StaffListViewModel staffListViewModel)
         {
             staffListViewModel.Managers = await _context.Staff
@@ -103,10 +128,10 @@ namespace StoreProject.Controllers
                 .Select(s => new SelectListItem(s.StoreName, s.StoreId.ToString()))
                 .Distinct()
                 .ToListAsync();
-            staffListViewModel.ActiveList = await _context.Staff
-                .Select(s => new SelectListItem(s.Active.ToString(), s.Active.ToString()))
-                .Distinct()
-                .ToListAsync();
+            //staffListViewModel.ActiveList = await _context.Staff
+            //    .Select(s => new SelectListItem(s.Active.ToString(), s.Active.ToString()))
+            //    .Distinct()
+            //    .ToListAsync();
         }
 
         

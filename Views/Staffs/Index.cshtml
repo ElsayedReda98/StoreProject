@@ -43,12 +43,18 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label asp-for="ActiveSearch" class="control-label"></label>
+                    @*@*<label asp-for="ActiveBox" class="control-label"></label>*@
                     @*<Select asp-for="ActiveSearch" asp-items="Model.ActiveList" class="form-control">
                         <option>All</option>
                     </Select>*@
                     @*<input  asp-for="ActiveSearch" type="checkbox" class="form-control" />*@
-                    @Html.CheckBoxFor(m => m.ActiveSearch)
+                     @*@Html.CheckBoxFor(m => m.ActiveBox)*@
+                   <input type="radio" id="All" name="ActiveBox" value="" checked>
+                  <label for="All">All</label>
+                  <input type="radio" id="Active" name="ActiveBox" value="true">
+                  <label for="active">Active</label>
+                  <input type="radio" id="NotActive" name="ActiveBox" value="false">
+                  <label for="notactive">NotActive</label>
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Filter" class="btn btn-primary"  />
@@ -109,12 +115,7 @@
             </td>
             <td>
                @*@Html.DisplayFor(modelItem => item.ManagerId)*@
-                        @if (item.ManagerId != null) {
-                            @Html.DisplayFor(modelItem => item.Manager.FirstName)
-                        }
-                
-
-                
+               @Html.DisplayFor(modelItem => item.Manager.FirstName)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.StaffId">Edit</a> |

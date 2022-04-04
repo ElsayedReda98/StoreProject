@@ -41,18 +41,18 @@ namespace StoreProject.Models
 
         ////one to many relationship between staffs and stores
         //staff is many and stores is one
-        [Required]
+        
         [Display(Name = "Store ")]
-        public int StoreId { get; set; }
+        public int? StoreId { get; set; }
         public Store Store { get; set; }
 
         // *****************
         
         [Display(Name = "Manager ")]
         public int? ManagerId { get; set; }
-        public virtual Staff Manager { get; set; }
+        public  Staff Manager { get; set; }
 
-        public virtual ICollection<Staff> Managers { get; set; }
+        public  ICollection<Staff> Managers { get; set; }
 
         //rsh
         public ICollection<Order> Orders { get; set; }

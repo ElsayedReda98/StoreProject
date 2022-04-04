@@ -33,10 +33,10 @@ namespace StoreProject.Controllers
         {
             var customers = from c in _context.Customer
                             select c;
-            if (!string.IsNullOrEmpty(customerListViewModel.NameSearch))
+            if (!string.IsNullOrWhiteSpace(customerListViewModel.NameSearch))
             {
-                customers = customers.Where(s => s.FirstName.Contains(customerListViewModel.NameSearch)
-                                              || s.LastName.Contains(customerListViewModel.NameSearch) );
+                customers = customers.Where(s => (s.FirstName + " " + s.LastName).Contains(customerListViewModel.NameSearch.Trim()));
+                                               
             }
             if (!string.IsNullOrEmpty(customerListViewModel.EmailSearch))
             {
