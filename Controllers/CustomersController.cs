@@ -33,18 +33,18 @@ namespace StoreProject.Controllers
         {
             var customers = from c in _context.Customer
                             select c;
-            if (!string.IsNullOrWhiteSpace(customerListViewModel.NameSearch))
+            if (!string.IsNullOrWhiteSpace(customerListViewModel.Name))
             {
-                customers = customers.Where(s => (s.FirstName + " " + s.LastName).Contains(customerListViewModel.NameSearch.Trim()));
+                customers = customers.Where(s => (s.FirstName + " " + s.LastName).Contains(customerListViewModel.Name.Trim()));
                                                
             }
-            if (!string.IsNullOrEmpty(customerListViewModel.EmailSearch))
+            if (!string.IsNullOrEmpty(customerListViewModel.Email))
             {
-                customers = customers.Where(c => c.Email.Contains(customerListViewModel.EmailSearch)); 
+                customers = customers.Where(c => c.Email.Contains(customerListViewModel.Email)); 
             }
-            if (!string.IsNullOrEmpty(customerListViewModel.PhoneSearch))
+            if (!string.IsNullOrEmpty(customerListViewModel.Phone))
             {
-                customers = customers.Where(c => c.Phone.Contains(customerListViewModel.PhoneSearch));
+                customers = customers.Where(c => c.Phone.Contains(customerListViewModel.Phone));
             }
 
             int pageSize = 10;

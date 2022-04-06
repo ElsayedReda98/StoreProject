@@ -5,9 +5,9 @@ namespace StoreProject.ViewModels
 {
     public class CustomerListViewModel
     {
-        public string NameSearch { get; set; }
-        public string EmailSearch { get; set; }
-        public string PhoneSearch { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
         public int PageNumber { get; set; } = 1;
         public IPagedList<Customer> Customers { get; set; }
 

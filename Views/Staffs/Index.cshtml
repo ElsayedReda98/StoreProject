@@ -19,26 +19,26 @@
         <form asp-controller="Staffs" asp-action="Index" method="Get">
             <div class="col-md-4">
                 <div class="form-group">
-                    <label asp-for="NameSearch" class="control label"></label>
-                    <input asp-for="NameSearch" class="form-control" />
+                    <label asp-for="Name" class="control label"></label>
+                    <input asp-for="Name" class="form-control" />
                 </div>
                 <div class="form-group">
-                    <label asp-for="EmailSearch" class="control-label"></label>
-                    <input asp-for="EmailSearch" class="form-control" />
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email" class="form-control" />
                 </div>
                 <div class="form-group">
-                    <label asp-for="PhoneSearch" class="control-label"></label>
-                    <input asp-for="PhoneSearch" class="form-control" />
+                    <label asp-for="Phone" class="control-label"></label>
+                    <input asp-for="Phone" class="form-control" />
                 </div>
                 <div class="form-group">
-                    <label asp-for="SelectedManager" class="control-label"></label>
-                    <select asp-for="SelectedManager" asp-items="Model.Managers" class="form-control" >
+                    <label asp-for="Manager" class="control-label"></label>
+                    <select asp-for="Manager" asp-items="Model.Managers" class="form-control" >
                         <option>All</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label asp-for="SelectedStore" class="control-label"> </label>
-                    <select asp-for="SelectedStore" asp-items="Model.Stores" class="form-control" >
+                    <label asp-for="Store" class="control-label"> </label>
+                    <select asp-for="Store" asp-items="Model.Stores" class="form-control" >
                         <option>All</option>
                     </select>
                 </div>
@@ -49,12 +49,16 @@
                     </Select>*@
                     @*<input  asp-for="ActiveSearch" type="checkbox" class="form-control" />*@
                      @*@Html.CheckBoxFor(m => m.ActiveBox)*@
-                   <input type="radio" id="All" name="ActiveBox" value="" checked>
+                  @Html.RadioButtonFor(model => model.Active,"",new {id = "All"})
+                     @*<input type="radio" id="All" name="ActiveBox" value="" checked>*@
                   <label for="All">All</label>
-                  <input type="radio" id="Active" name="ActiveBox" value="true">
+                 @Html.RadioButtonFor(model => model.Active, true, new {@checked="true", id = "active"})
+@*                  <input type="radio" id="Active" name="ActiveBox" value="true">*@
                   <label for="active">Active</label>
-                  <input type="radio" id="NotActive" name="ActiveBox" value="false">
+                 @Html.RadioButtonFor(model => model.Active,false,new {id = "notactive"})
+@*                  <input type="radio" id="NotActive" name="ActiveBox" value="false">*@
                   <label for="notactive">NotActive</label>
+
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Filter" class="btn btn-primary"  />
@@ -127,8 +131,8 @@
     </tbody>
 </table>
 @Html.PagedListPager(Model.Staffs, page =>Url.Action("Index",
-new {pageNumber = page, SearchString = Model.NameSearch,
-    SelectedEmail = Model.EmailSearch, SelectedPhone = Model.PhoneSearch }), 
+new {pageNumber = page, SearchString = Model.Name,
+    SelectedEmail = Model.Email, SelectedPhone = Model.Phone ,Active = Model.Active }), 
     PagedListRenderOptions.ClassicPlusFirstAndLast)
 
 </div>

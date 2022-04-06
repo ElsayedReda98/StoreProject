@@ -31,54 +31,34 @@ namespace StoreProject.Controllers
 
         public async Task<IActionResult> Index(StaffListViewModel staffListViewModel)
         {
-            //var staffList = from s in _context.Staff
-            //                select s;
-            //*******************************************
             IQueryable<Staff> staffList = _context.Staff
                                 .Include(m => m.Manager)
                                 .Include(s => s.Store);
 
-            staffListViewModel.ActiveList = (from s in _context.Staff
-                                            select s).Distinct().ToList();
-            //*******************************************************************************************
-
-            //if (!string.IsNullOrEmpty(staffListViewModel.NameSearch))
-            //{
-            //    staffList = staffList.Where(s => s.FirstName.Contains(staffListViewModel.NameSearch)
-            //                                   || s.LastName.Contains(staffListViewModel.NameSearch));
-            //}
-            //******************************************************
-            /* error as FullName prop not mapped to database
-            if (!string.IsNullOrEmpty(staffListViewModel.NameSearch))
+            if (!string.IsNullOrWhiteSpace(staffListViewModel.Name))
             {
-                staffList = staffList.Where(s => s.FullName.Contains(staffListViewModel.NameSearch));
+                staffList = staffList.Where(s => (s.FirstName + s.LastName).Contains(staffListViewModel.Name.Trim()));
             }
-            */
-            //***********************************************************************************************
-            if (!string.IsNullOrEmpty(staffListViewModel.NameSearch))
+            if (!string.IsNullOrWhiteSpace(staffListViewModel.Email))
             {
-                staffList = staffList.Where(s => (s.FirstName + s.LastName).Contains(staffListViewModel.NameSearch));
+                staffList = staffList.Where(s => s.Email.Contains(staffListViewModel.Email.Trim()));
             }
-            if (!string.IsNullOrEmpty(staffListViewModel.EmailSearch))
+            if (!string.IsNullOrWhiteSpace(staffListViewModel.Phone))
             {
-                staffList = staffList.Where(s => s.Email.Contains(staffListViewModel.EmailSearch));
+                staffList = staffList.Where(s => s.Phone.Contains(staffListViewModel.Phone.Trim()));
             }
-            if (!string.IsNullOrEmpty(staffListViewModel.PhoneSearch))
+            if (staffListViewModel.Active.HasValue)
             {
-                staffList = staffList.Where(s => s.Phone.Contains(staffListViewModel.PhoneSearch));
-            }
-            if (staffListViewModel.ActiveBox.HasValue)
-            {
-                byte x  = staffListViewModel.ActiveBox.Value ? (byte)1 : (byte)0;
+                byte x  = staffListViewModel.Active.Value ? (byte)1 : (byte)0;
                 staffList = staffList.Where(s => s.Active == x);
             }
-            if (staffListViewModel.SelectedManager > 0)
+            if (staffListViewModel.Manager > 0)
             {
-                staffList = staffList.Where(s => s.ManagerId == staffListViewModel.SelectedManager);
+                staffList = staffList.Where(s => s.ManagerId == staffListViewModel.Manager);
             }
-            if (staffListViewModel.SelectedStore > 0)
+            if (staffListViewModel.Store > 0)
             {
-                staffList = staffList.Where(s => s.StoreId == staffListViewModel.SelectedStore);
+                staffList = staffList.Where(s => s.StoreId == staffListViewModel.Store);
             }
             int pageSize = 10;
             staffListViewModel.PageNumber = staffListViewModel.PageNumber <= 0 ? 1 : staffListViewModel.PageNumber;
@@ -95,27 +75,6 @@ namespace StoreProject.Controllers
              FileLookUp(staffListViewModel);
             return View(staffListViewModel);
         }
-
-        [HttpPost,ActionName("post")]
-        public async Task<IActionResult> IndexPost(StaffListViewModel staffListViewModel)
-        {
-            var countChecked = 0;
-            var countUnChecked = 0;
-            var count = staffListViewModel.ActiveList.Count();
-
-            for (int i = 0; i < count; i++)
-            {
-                if (staffListViewModel.ActiveBox == true)
-                {
-                    countChecked ++;
-                }
-                else
-                {
-                    countUnChecked ++;
-                }
-            }
-            return View(staffListViewModel);
-        }
         
         private async Task FileLookUp(StaffListViewModel staffListViewModel)
         {
@@ -128,13 +87,7 @@ namespace StoreProject.Controllers
                 .Select(s => new SelectListItem(s.StoreName, s.StoreId.ToString()))
                 .Distinct()
                 .ToListAsync();
-            //staffListViewModel.ActiveList = await _context.Staff
-            //    .Select(s => new SelectListItem(s.Active.ToString(), s.Active.ToString()))
-            //    .Distinct()
-            //    .ToListAsync();
         }
-
-        
 
         // GET: Staffs/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -155,15 +108,15 @@ namespace StoreProject.Controllers
         }
 
         // GET: Staffs/Create
-        public async Task<IActionResult> Create(StaffListViewModel staffListViewModel)
+        public async Task<IActionResult> Create()
         {
-            //await FileLookUp(staffListViewModel);
-
-            ViewBag.Stores = new SelectList(_context.Store.OrderBy(s => s.StoreId).Distinct().ToList(), "StoreId", "StoreName");
-            ViewBag.Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "ManagerId", "FirstName");
-            ViewBag.Actives = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "Active", "Active");
+            StaffCreateViewModel staffCreateViewModel = new StaffCreateViewModel() 
+            {
+                Stores = new SelectList(_context.Store.OrderBy(s => s.StoreId).Distinct().ToList(), "StoreId", "StoreName"),
+                Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "ManagerId", "FirstName")
+            };
             
-            return View();
+            return View(staffCreateViewModel);
         }
 
         // POST: Staffs/Create
@@ -171,17 +124,16 @@ namespace StoreProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("StaffId,FirstName,LastName,Email,Phone,Active,StoreId,ManagerId")] Staff staff, StaffListViewModel staffListViewModel)
+        public async Task<IActionResult> Create( 
+         StaffCreateViewModel staffCreateViewModel)
         {
-            ViewBag.Stores = new SelectList(_context.Store.OrderBy(s => s.StoreId).Distinct().ToList(), "StoreId", "StoreName");
-            ViewBag.Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "ManagerId", "FullName");
-            ViewBag.Actives = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "Active", "Active");
-
+            staffCreateViewModel.Stores = new SelectList(_context.Store.OrderBy(s => s.StoreId).Distinct().ToList(), "StoreId", "StoreName");
+            staffCreateViewModel.Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "ManagerId", "FirstName");
 
             if (ModelState.IsValid)
             {
-                var emailExist = _context.Staff.Any(e => e.Email == staff.Email);
-                var phoneExist = _context.Staff.Any(p => p.Phone == staff.Phone);
+                var emailExist = _context.Staff.Any(e => e.Email == staffCreateViewModel.Email);
+                var phoneExist = _context.Staff.Any(p => p.Phone == staffCreateViewModel.Phone);
                 if (emailExist)
                 {
                     ModelState.AddModelError("Email", "This Email is Already Exist");
@@ -192,19 +144,27 @@ namespace StoreProject.Controllers
                     ModelState.AddModelError("Phone", "This Phone is Already Exist");
                     return View();
                 }
-                
-                _context.Add(staff);
+
+                Staff staff = new Staff();
+                staff.FirstName = staffCreateViewModel.FirstName;
+                staff.LastName = staffCreateViewModel.LastName;
+                staff.Email = staffCreateViewModel.Email;
+                staff.Phone = staffCreateViewModel.Phone;
+                staff.StoreId = staffCreateViewModel.Store;
+                staff.ManagerId= staffCreateViewModel.Manager;
+                staff.Active = (byte)(staffCreateViewModel.Active ? 1 : 0);
+
+                _context.Staff.Add(staff);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
                 
             }
-            //await FileLookUp(staffListViewModel);
-            ViewBag.Stores = new SelectList(_context.Store.OrderBy(s => s.StoreId).Distinct().ToList(), "StoreId", "StoreName");
-            ViewBag.Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "ManagerId", "FullName");
-            ViewBag.Actives = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "Active", "Active");
 
+            staffCreateViewModel.Stores = new SelectList(_context.Store.OrderBy(s => s.StoreId).Distinct().ToList(), "StoreId", "StoreName");
+            staffCreateViewModel.Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "ManagerId", "FirstName");
+            
+            return View(staffCreateViewModel);
 
-            return View(staff);
         }
 
         // GET: Staffs/Edit/5
