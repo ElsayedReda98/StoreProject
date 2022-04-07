@@ -15,7 +15,7 @@ namespace StoreProject.ViewModels
         [StringLength(50, MinimumLength = 3)]
         public string LastName { get; set; }
 
-        
+        [Required]
         [EmailAddress]
         [StringLength(50, MinimumLength = 3)]
         public string Email { get; set; }
@@ -29,7 +29,7 @@ namespace StoreProject.ViewModels
         public int StoreId { get; set; }
         
         [Display(Name = "Manager ")]
-        public int ManagerId { get; set; }
+        public int? ManagerId { get; set; }
 
         [Required]
         public bool Active { get; set; }

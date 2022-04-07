@@ -124,8 +124,10 @@ namespace StoreProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("FirstName,LastName,Phone,Email,StoreId,managerId,Active")]StaffCreateViewModel staffCreateViewModel)
+        public async Task<IActionResult> Createpost(StaffCreateViewModel staffCreateViewModel)
         {
+            Staff staff = new Staff();
+            //StaffCreateViewModel staffCreateViewModel = new StaffCreateViewModel();
             //StaffCreateViewModel staffCreateViewModel2 = new StaffCreateViewModel()
             //{
             //    Stores = new SelectList(_context.Store.OrderBy(s => s.StoreId).Distinct().ToList(), "StoreId", "StoreName"),
@@ -135,7 +137,7 @@ namespace StoreProject.Controllers
                 (r => new SelectListItem(r.StoreName, r.StoreId.ToString()))
                 .ToListAsync();
             staffCreateViewModel.Managers = await _context.Staff.Select
-                (m => new SelectListItem(m.FirstName, m.ManagerId.ToString()))
+                (m => new SelectListItem(m.FirstName, m.StaffId.ToString()))
                 .Distinct()
                 .ToListAsync();
                 
@@ -154,13 +156,13 @@ namespace StoreProject.Controllers
                     return View();
                 }
 
-                Staff staff = new Staff();
+                //Staff staff = new Staff();
                 staff.FirstName = staffCreateViewModel.FirstName;
                 staff.LastName = staffCreateViewModel.LastName;
                 staff.Email = staffCreateViewModel.Email;
                 staff.Phone = staffCreateViewModel.Phone;
                 staff.StoreId = staffCreateViewModel.StoreId;
-                staff.ManagerId= staffCreateViewModel.ManagerId;
+                staff.ManagerId = staffCreateViewModel.ManagerId;
                 staff.Active = (byte)(staffCreateViewModel.Active ? 1 : 0);
 
                 _context.Staff.Add(staff);
