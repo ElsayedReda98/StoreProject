@@ -49,7 +49,7 @@ namespace StoreProject.Controllers
             }
             if (staffListViewModel.Active.HasValue)
             {
-                byte x  = staffListViewModel.Active.Value ? (byte)1 : (byte)0;
+                byte x  = (byte)(staffListViewModel.Active.Value ? 1 : 0);
                 staffList = staffList.Where(s => s.Active == x);
             }
             if (staffListViewModel.Manager > 0)
@@ -72,20 +72,20 @@ namespace StoreProject.Controllers
             staffListViewModel.Staffs = new StaticPagedList<Staff>
                 (items, staffListViewModel.PageNumber, pageSize, count); ;
 
-             FileLookUp(staffListViewModel);
+            await FileLookUp(staffListViewModel);
+
             return View(staffListViewModel);
         }
         
         private async Task FileLookUp(StaffListViewModel staffListViewModel)
         {
             staffListViewModel.Managers = await _context.Staff
-                .Select(s => new SelectListItem(s.FirstName,s.ManagerId.ToString()))
+                .Select(s => new SelectListItem(s.FullName,s.StaffId.ToString()))
                 .Distinct()
                 .ToListAsync();
 
             staffListViewModel.Stores = await _context.Store
                 .Select(s => new SelectListItem(s.StoreName, s.StoreId.ToString()))
-                .Distinct()
                 .ToListAsync();
         }
 
@@ -113,7 +113,7 @@ namespace StoreProject.Controllers
             StaffCreateViewModel staffCreateViewModel = new StaffCreateViewModel() 
             {
                 Stores = new SelectList(_context.Store.OrderBy(s => s.StoreId).Distinct().ToList(), "StoreId", "StoreName"),
-                Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "ManagerId", "FirstName")
+                Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "StaffId", "FirstName")
             };
             
             return View(staffCreateViewModel);
@@ -122,14 +122,23 @@ namespace StoreProject.Controllers
         // POST: Staffs/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost, ActionName("Create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create( 
-         StaffCreateViewModel staffCreateViewModel)
+        public async Task<IActionResult> Create([Bind("FirstName,LastName,Phone,Email,StoreId,managerId,Active")]StaffCreateViewModel staffCreateViewModel)
         {
-            staffCreateViewModel.Stores = new SelectList(_context.Store.OrderBy(s => s.StoreId).Distinct().ToList(), "StoreId", "StoreName");
-            staffCreateViewModel.Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "ManagerId", "FirstName");
-
+            //StaffCreateViewModel staffCreateViewModel2 = new StaffCreateViewModel()
+            //{
+            //    Stores = new SelectList(_context.Store.OrderBy(s => s.StoreId).Distinct().ToList(), "StoreId", "StoreName"),
+            //    Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "ManagerId", "FirstName")
+            //};
+            staffCreateViewModel.Stores = await _context.Store.Select
+                (r => new SelectListItem(r.StoreName, r.StoreId.ToString()))
+                .ToListAsync();
+            staffCreateViewModel.Managers = await _context.Staff.Select
+                (m => new SelectListItem(m.FirstName, m.ManagerId.ToString()))
+                .Distinct()
+                .ToListAsync();
+                
             if (ModelState.IsValid)
             {
                 var emailExist = _context.Staff.Any(e => e.Email == staffCreateViewModel.Email);
@@ -150,8 +159,8 @@ namespace StoreProject.Controllers
                 staff.LastName = staffCreateViewModel.LastName;
                 staff.Email = staffCreateViewModel.Email;
                 staff.Phone = staffCreateViewModel.Phone;
-                staff.StoreId = staffCreateViewModel.Store;
-                staff.ManagerId= staffCreateViewModel.Manager;
+                staff.StoreId = staffCreateViewModel.StoreId;
+                staff.ManagerId= staffCreateViewModel.ManagerId;
                 staff.Active = (byte)(staffCreateViewModel.Active ? 1 : 0);
 
                 _context.Staff.Add(staff);
@@ -161,7 +170,7 @@ namespace StoreProject.Controllers
             }
 
             staffCreateViewModel.Stores = new SelectList(_context.Store.OrderBy(s => s.StoreId).Distinct().ToList(), "StoreId", "StoreName");
-            staffCreateViewModel.Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "ManagerId", "FirstName");
+            staffCreateViewModel.Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "StaffId", "FirstName");
             
             return View(staffCreateViewModel);
 
@@ -170,36 +179,93 @@ namespace StoreProject.Controllers
         // GET: Staffs/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            var stores = from s in _context.Store
+                         orderby s.StoreId
+                         select s;
+            var managers = from m in _context.Staff
+                           orderby m.StaffId
+                           select m;
+            StaffEditViewModel staffEditViewModel = new StaffEditViewModel();
+            staffEditViewModel.Stores = new SelectList(stores, "StoreId", "StoreName");
+            staffEditViewModel.Managers = new SelectList(managers, "StaffId", "FullName");
+
+            //StaffEditViewModel staffEditViewModel = new StaffEditViewModel();
+            //staffEditViewModel.Stores = new SelectList(sList, "StoreId", "StoreName");
+            //staffEditViewModel.Managers = new SelectList(_context.Staff.OrderBy(m => m.ManagerId).ToList(), "ManagerId", "FirstName");
+
             if (id == null)
             {
-                return NotFound();
+                return BadRequest();
             }
+            
+            //var staff = await _context.Staff.FindAsync(id);
+            var staff = await _context.Staff.FirstOrDefaultAsync(s => s.StaffId == id);
 
-            var staff = await _context.Staff.FindAsync(id);
+            staffEditViewModel.StaffId = staff.StaffId;
+            staffEditViewModel.FirstName = staff.FirstName;
+            staffEditViewModel.LastName = staff.LastName;
+            staffEditViewModel.Email = staff.Email;
+            staffEditViewModel.Phone = staff.Phone;
+            staffEditViewModel.Store = staff.StoreId;
+            staffEditViewModel.Manager = (int)(staff?.ManagerId);
+            staffEditViewModel.Active = Convert.ToBoolean(staff.Active);
+
+
             if (staff == null)
             {
                 return NotFound();
             }
-            return View(staff);
+            //staffEditViewModel.Stores = new SelectList(_context.Store.OrderBy(s => s.StoreId).ToList(), "StoreId", "StoreName");
+            //staffEditViewModel.Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).ToList(), "ManagerId", "FirstName");
+            
+            return View(staffEditViewModel);
         }
 
         // POST: Staffs/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost,ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("StaffId,FirstName,LastName,Email,Phone,Active,StoreId,ManagerId")] Staff staff)
+        public async Task<IActionResult> EditPost(int id)
         {
-            if (id != staff.StaffId)
+            StaffEditViewModel staffEditViewModel = new StaffEditViewModel()
             {
-                return NotFound();
+                Stores = new SelectList(_context.Store.OrderBy(s => s.StoreId).ToList(), "StoreId", "StoreName"),
+                Managers = new SelectList(_context.Staff.OrderBy(m => m.StaffId).ToList(), "ManagerId", "LastName")
+            };
+            Staff staff = new Staff();
+            if (id != staffEditViewModel.StaffId)
+            {
+                return BadRequest();
             }
 
             if (ModelState.IsValid)
             {
+                var emailExist = _context.Staff.Any(e => e.Email == staffEditViewModel.Email);
+                var phoneExist = _context.Staff.Any(p => p.Phone == staffEditViewModel.Phone);
+                if (emailExist)
+                {
+                    ModelState.AddModelError("Email", "can't update, This Email is Already Exist");
+                    return View();
+                }
+                else if (phoneExist)
+                {
+                    ModelState.AddModelError("Phone", "can't update, This Phone is Already Exist");
+                    return View();
+                }
                 try
                 {
-                    _context.Update(staff);
+                    //added
+                    staff.FirstName = staffEditViewModel.FirstName;
+                    staff.LastName = staffEditViewModel.LastName;
+                    staff.Email = staffEditViewModel.Email;
+                    staff.Phone = staffEditViewModel.Phone;
+                    staff.StoreId = staffEditViewModel.Store;
+                    staff.ManagerId = staffEditViewModel.Manager;
+                    staff.Active = (byte)(staffEditViewModel.Active ? 1 : 0);
+
+
+                    _context.Staff.Update(staff);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -215,9 +281,11 @@ namespace StoreProject.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(staff);
-        }
 
+            staffEditViewModel.Stores = new SelectList(_context.Store.OrderBy(s => s.StoreId).Distinct().ToList(), "StoreId", "StoreName");
+            staffEditViewModel.Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "ManagerId", "FirstName");
+            return View(staffEditViewModel);
+        }
         // GET: Staffs/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {

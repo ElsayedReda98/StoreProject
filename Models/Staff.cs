@@ -31,7 +31,7 @@ namespace StoreProject.Models
 
         [StringLength(14, MinimumLength = 11)]
         [DataType(DataType.PhoneNumber)]
-        [Phone]
+        
         public string? Phone { get; set; }
 
         [Required]
@@ -43,7 +43,7 @@ namespace StoreProject.Models
         //staff is many and stores is one
 
         [Display(Name = "Store ")]
-        public int? StoreId { get; set; }
+        public int StoreId { get; set; }
         public Store Store { get; set; }
 
         [Display(Name = "Manager ")]

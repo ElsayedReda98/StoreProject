@@ -52,7 +52,7 @@
                   @Html.RadioButtonFor(model => model.Active,"",new {id = "All"})
                      @*<input type="radio" id="All" name="ActiveBox" value="" checked>*@
                   <label for="All">All</label>
-                 @Html.RadioButtonFor(model => model.Active, true, new {@checked="true", id = "active"})
+                 @Html.RadioButtonFor(model => model.Active, true, new {id = "active"})
 @*                  <input type="radio" id="Active" name="ActiveBox" value="true">*@
                   <label for="active">Active</label>
                  @Html.RadioButtonFor(model => model.Active,false,new {id = "notactive"})
