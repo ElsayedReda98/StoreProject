@@ -60,7 +60,7 @@ namespace StoreProject.Controllers
             {
                 staffList = staffList.Where(s => s.StoreId == staffListViewModel.Store);
             }
-            int pageSize = 10;
+            int pageSize = 15;
             staffListViewModel.PageNumber = staffListViewModel.PageNumber <= 0 ? 1 : staffListViewModel.PageNumber;
             
             var count =await staffList.CountAsync();
@@ -127,12 +127,6 @@ namespace StoreProject.Controllers
         public async Task<IActionResult> Createpost(StaffCreateViewModel staffCreateViewModel)
         {
             Staff staff = new Staff();
-            //StaffCreateViewModel staffCreateViewModel = new StaffCreateViewModel();
-            //StaffCreateViewModel staffCreateViewModel2 = new StaffCreateViewModel()
-            //{
-            //    Stores = new SelectList(_context.Store.OrderBy(s => s.StoreId).Distinct().ToList(), "StoreId", "StoreName"),
-            //    Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "ManagerId", "FirstName")
-            //};
             staffCreateViewModel.Stores = await _context.Store.Select
                 (r => new SelectListItem(r.StoreName, r.StoreId.ToString()))
                 .ToListAsync();
@@ -189,11 +183,7 @@ namespace StoreProject.Controllers
                            select m;
             StaffEditViewModel staffEditViewModel = new StaffEditViewModel();
             staffEditViewModel.Stores = new SelectList(stores, "StoreId", "StoreName");
-            staffEditViewModel.Managers = new SelectList(managers, "StaffId", "FullName");
-
-            //StaffEditViewModel staffEditViewModel = new StaffEditViewModel();
-            //staffEditViewModel.Stores = new SelectList(sList, "StoreId", "StoreName");
-            //staffEditViewModel.Managers = new SelectList(_context.Staff.OrderBy(m => m.ManagerId).ToList(), "ManagerId", "FirstName");
+            staffEditViewModel.Managers = new SelectList(managers, "StaffId", "FirstName");
 
             if (id == null)
             {
@@ -208,17 +198,16 @@ namespace StoreProject.Controllers
             staffEditViewModel.LastName = staff.LastName;
             staffEditViewModel.Email = staff.Email;
             staffEditViewModel.Phone = staff.Phone;
-            staffEditViewModel.Store = staff.StoreId;
-            staffEditViewModel.Manager = (int)(staff?.ManagerId);
+            staffEditViewModel.StoreId = staff.StoreId;
+            staffEditViewModel.ManagerId = staff?.ManagerId;
             staffEditViewModel.Active = Convert.ToBoolean(staff.Active);
-
 
             if (staff == null)
             {
                 return NotFound();
             }
             //staffEditViewModel.Stores = new SelectList(_context.Store.OrderBy(s => s.StoreId).ToList(), "StoreId", "StoreName");
-            //staffEditViewModel.Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).ToList(), "ManagerId", "FirstName");
+            //staffEditViewModel.Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).ToList(), "StaffId", "FirstName");
             
             return View(staffEditViewModel);
         }
@@ -228,14 +217,27 @@ namespace StoreProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost,ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPost(int id)
+        public async Task<IActionResult> EditPost(int id,StaffEditViewModel staffEditViewModel)
         {
-            StaffEditViewModel staffEditViewModel = new StaffEditViewModel()
-            {
-                Stores = new SelectList(_context.Store.OrderBy(s => s.StoreId).ToList(), "StoreId", "StoreName"),
-                Managers = new SelectList(_context.Staff.OrderBy(m => m.StaffId).ToList(), "ManagerId", "LastName")
-            };
+            
+            //var stores = await (from s in _context.Store
+            //         orderby s.StoreId
+            //         select s).ToListAsync();
+            
+            //var managers = await (from m in _context.Staff
+            //               orderby m.StaffId
+            //               select m).ToListAsync();
+            //StaffEditViewModel staffEditViewModel = new StaffEditViewModel();
+            staffEditViewModel.Stores = await _context.Store.Select
+                (r => new SelectListItem(r.StoreName, r.StoreId.ToString()))
+                .ToListAsync();
+            staffEditViewModel.Managers = await _context.Staff.Select
+                (m => new SelectListItem(m.FirstName, m.StaffId.ToString()))
+                .Distinct()
+                .ToListAsync();
+
             Staff staff = new Staff();
+
             if (id != staffEditViewModel.StaffId)
             {
                 return BadRequest();
@@ -258,21 +260,24 @@ namespace StoreProject.Controllers
                 try
                 {
                     //added
+                    //staff.StaffId = staffEditViewModel.StaffId;
                     staff.FirstName = staffEditViewModel.FirstName;
                     staff.LastName = staffEditViewModel.LastName;
                     staff.Email = staffEditViewModel.Email;
                     staff.Phone = staffEditViewModel.Phone;
-                    staff.StoreId = staffEditViewModel.Store;
-                    staff.ManagerId = staffEditViewModel.Manager;
+                    staff.StoreId = staffEditViewModel.StoreId;
+                    staff.ManagerId = staffEditViewModel.ManagerId;
                     staff.Active = (byte)(staffEditViewModel.Active ? 1 : 0);
-
+                    //************************************************************
+                    //staffEditViewModel.Stores = new SelectList(stores, "StoreId", "StoreName");
+                    //staffEditViewModel.Managers = new SelectList(managers, "StaffId", "FirstName");
 
                     _context.Staff.Update(staff);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!StaffExists(staff.StaffId))
+                    if (!StaffExists(staffEditViewModel.StaffId))
                     {
                         return NotFound();
                     }
@@ -284,8 +289,8 @@ namespace StoreProject.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            staffEditViewModel.Stores = new SelectList(_context.Store.OrderBy(s => s.StoreId).Distinct().ToList(), "StoreId", "StoreName");
-            staffEditViewModel.Managers = new SelectList(_context.Staff.OrderBy(s => s.StaffId).Distinct().ToList(), "ManagerId", "FirstName");
+            //staffEditViewModel.Stores = new SelectList(stores, "StoreId", "StoreName");
+            //staffEditViewModel.Managers = new SelectList(managers, "StaffId", "FullName");
             return View(staffEditViewModel);
         }
         // GET: Staffs/Delete/5

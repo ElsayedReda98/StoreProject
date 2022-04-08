@@ -10,10 +10,10 @@ namespace StoreProject.ViewModels
         public string Email { get; set; }
         public string Phone { get; set; }
         public bool Active { get; set; }
-        public int Store { get; set; }
-        public int Manager { get; set; }
-        public IEnumerable<SelectListItem> Stores { get; set; }
-        public IEnumerable<SelectListItem> Managers { get; set; }
+        public int StoreId { get; set; }
+        public int? ManagerId { get; set; }
+        public IEnumerable<SelectListItem>? Stores { get; set; } = new List<SelectListItem>();
+        public IEnumerable<SelectListItem> Managers { get; set; } = new List<SelectListItem>();
 
     }
 }
