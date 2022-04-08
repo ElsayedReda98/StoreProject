@@ -217,17 +217,17 @@ namespace StoreProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost,ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPost(int id,StaffEditViewModel staffEditViewModel)
+        public async Task<IActionResult> EditPost(int id,[Bind("StaffId,FirstName,LastName,Email,Phone,Active,StoreId,ManagerId")]Staff staff)
         {
-            
+
             //var stores = await (from s in _context.Store
             //         orderby s.StoreId
             //         select s).ToListAsync();
-            
+
             //var managers = await (from m in _context.Staff
             //               orderby m.StaffId
             //               select m).ToListAsync();
-            //StaffEditViewModel staffEditViewModel = new StaffEditViewModel();
+            StaffEditViewModel staffEditViewModel = new StaffEditViewModel();
             staffEditViewModel.Stores = await _context.Store.Select
                 (r => new SelectListItem(r.StoreName, r.StoreId.ToString()))
                 .ToListAsync();
@@ -236,17 +236,17 @@ namespace StoreProject.Controllers
                 .Distinct()
                 .ToListAsync();
 
-            Staff staff = new Staff();
+            //Staff staff = new Staff();
 
-            if (id != staffEditViewModel.StaffId)
+            if (id != staff.StaffId)
             {
                 return BadRequest();
             }
 
             if (ModelState.IsValid)
             {
-                var emailExist = _context.Staff.Any(e => e.Email == staffEditViewModel.Email);
-                var phoneExist = _context.Staff.Any(p => p.Phone == staffEditViewModel.Phone);
+                var emailExist = _context.Staff.Any(e => e.Email == staffEditViewModel.Email && e.StaffId != id);
+                var phoneExist = _context.Staff.Any(p => p.Phone == staffEditViewModel.Phone && p.StaffId != id);
                 if (emailExist)
                 {
                     ModelState.AddModelError("Email", "can't update, This Email is Already Exist");
@@ -261,13 +261,13 @@ namespace StoreProject.Controllers
                 {
                     //added
                     //staff.StaffId = staffEditViewModel.StaffId;
-                    staff.FirstName = staffEditViewModel.FirstName;
-                    staff.LastName = staffEditViewModel.LastName;
-                    staff.Email = staffEditViewModel.Email;
-                    staff.Phone = staffEditViewModel.Phone;
-                    staff.StoreId = staffEditViewModel.StoreId;
-                    staff.ManagerId = staffEditViewModel.ManagerId;
-                    staff.Active = (byte)(staffEditViewModel.Active ? 1 : 0);
+                    //staff.FirstName = staffEditViewModel.FirstName;
+                    //staff.LastName = staffEditViewModel.LastName;
+                    //staff.Email = staffEditViewModel.Email;
+                    //staff.Phone = staffEditViewModel.Phone;
+                    //staff.StoreId = staffEditViewModel.StoreId;
+                    //staff.ManagerId = staffEditViewModel.ManagerId;
+                    //staff.Active = (byte)(staffEditViewModel.Active ? 1 : 0);
                     //************************************************************
                     //staffEditViewModel.Stores = new SelectList(stores, "StoreId", "StoreName");
                     //staffEditViewModel.Managers = new SelectList(managers, "StaffId", "FirstName");
@@ -277,7 +277,7 @@ namespace StoreProject.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!StaffExists(staffEditViewModel.StaffId))
+                    if (!StaffExists(staff.StaffId))
                     {
                         return NotFound();
                     }
