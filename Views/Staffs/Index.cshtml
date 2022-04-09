@@ -133,7 +133,8 @@ h1>Index</h1>
 </table>
 @Html.PagedListPager(Model.Staffs, page =>Url.Action("Index",
 new {pageNumber = page, SearchString = Model.Name,
-    SelectedEmail = Model.Email, SelectedPhone = Model.Phone ,Active = Model.Active }), 
+    SelectedEmail = Model.Email, SelectedPhone = Model.Phone,
+    Active = Model.Active }), 
     PagedListRenderOptions.ClassicPlusFirstAndLast)
 
 </div>
