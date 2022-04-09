@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Country\Index.cshtml" />
     <Content Remove="Views\Products\IndexTest.cshtml" />
   </ItemGroup>
 
@@ -19,6 +20,10 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.2" />
     <PackageReference Include="X.PagedList" Version="8.1.0" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="8.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Country\" />
   </ItemGroup>
 
 </Project>

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StoreProject.Data;
 using StoreProject.Models;
+using StoreProject.ViewModels.Stores;
 
 namespace StoreProject.Controllers
 {
@@ -17,13 +18,34 @@ namespace StoreProject.Controllers
 
         public StoresController(StoreProjectContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(Index)); ;
         }
 
         // GET: Stores
-        public async Task<IActionResult> Index()
+        //public async Task<IActionResult> Index()
+        //{
+        //    return View(await _context.Store.ToListAsync());
+        //}
+        public async Task<IActionResult> Index(StoreIndexViewModel storeIndexViewModel)
         {
-            return View(await _context.Store.ToListAsync());
+            IQueryable<Store> stores = from s in _context.Store
+                                       orderby s.StoreId
+                                       select s;
+
+            if (!string.IsNullOrWhiteSpace(storeIndexViewModel.Name))
+            {
+                stores = stores.Where(s => s.StoreName.Contains(storeIndexViewModel.Name));
+            }
+            if (!string.IsNullOrWhiteSpace(storeIndexViewModel.Phone))
+            {
+                stores = stores.Where(s => s.Phone.Contains(storeIndexViewModel.Phone));
+            }
+            if (!string.IsNullOrWhiteSpace(storeIndexViewModel.Email))
+            {
+                stores = stores.Where(s => s.Email.Contains(storeIndexViewModel.Email));
+            }
+            storeIndexViewModel.Stores = stores.ToList();
+            return View(storeIndexViewModel);
         }
 
         // GET: Stores/Details/5
