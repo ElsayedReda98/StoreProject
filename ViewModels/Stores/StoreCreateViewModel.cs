@@ -9,9 +9,10 @@ namespace StoreProject.ViewModels.Stores
         [Display(Name ="Store Name")]
         public string StoreName { get; set;}
         
-        [StringLength(25)]
+        [StringLength(25),Required]
         public string Phone { get; set; }
         
+        [Required]
         [StringLength(255),EmailAddress]
         public string Email { get; set; }
         
@@ -24,6 +25,7 @@ namespace StoreProject.ViewModels.Stores
         [StringLength(10)]
         public string State { get; set; }
 
+        [Required]
         [StringLength(5)]
         [Display(Name ="Zip Code")]
         public string ZipCode { get; set; }

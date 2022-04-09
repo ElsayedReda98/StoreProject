@@ -1,4 +1,5 @@
-﻿@model StoreProject.Models.Store
+﻿@*@model StoreProject.Models.Store*@
+@model StoreProject.ViewModels.Stores.StoreCreateViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -43,9 +44,9 @@
                 <span asp-validation-for="State" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ZipCodde" class="control-label"></label>
-                <input asp-for="ZipCodde" class="form-control" />
-                <span asp-validation-for="ZipCodde" class="text-danger"></span>
+                <label asp-for="ZipCode" class="control-label"></label>
+                <input asp-for="ZipCode" class="form-control" />
+                <span asp-validation-for="ZipCode" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

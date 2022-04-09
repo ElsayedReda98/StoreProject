@@ -117,7 +117,7 @@ namespace StoreProject.Data
                 builder.Property(o => o.Street).HasColumnName("street");
                 builder.Property(o => o.City).HasColumnName("city");
                 builder.Property(o => o.State).HasColumnName("state");
-                builder.Property(o => o.ZipCodde).HasColumnName("zip_code");
+                builder.Property(o => o.ZipCode).HasColumnName("zip_code");
             });
 
             // pk for orderitem table
