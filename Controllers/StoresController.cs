@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using StoreProject.Data;
 using StoreProject.Models;
 using StoreProject.ViewModels.Stores;
+using X.PagedList;
 
 namespace StoreProject.Controllers
 {
@@ -44,7 +45,19 @@ namespace StoreProject.Controllers
             {
                 stores = stores.Where(s => s.Email.Contains(storeIndexViewModel.Email));
             }
-            storeIndexViewModel.Stores = stores.ToList();
+
+            int pageSize = 4;
+            storeIndexViewModel.PageNumber = storeIndexViewModel.PageNumber <= 0 ? 1 : storeIndexViewModel.PageNumber;
+
+            var count = await stores.CountAsync();
+            var items = await stores.OrderBy(s => s.StoreId)
+                .Skip((storeIndexViewModel.PageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+
+            storeIndexViewModel.Stores = new StaticPagedList<Store>
+                (items, storeIndexViewModel.PageNumber, pageSize, count);
             return View(storeIndexViewModel);
         }
 
