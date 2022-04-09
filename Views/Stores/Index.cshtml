@@ -100,6 +100,6 @@
 </table>
 @Html.PagedListPager(Model.Stores, 
     page => Url.Action(nameof(Index), 
-    new{Model.Name, Model.Phone, Model.Email}),
+    new{pageNumber = page, Model.Name, Model.Phone, Model.Email}),
 PagedListRenderOptions.ClassicPlusFirstAndLast)
 </div>
