@@ -89,6 +89,20 @@ namespace StoreProject.Controllers
         {
             if (ModelState.IsValid)
             {
+                var phoneExist = _context.Store.Any(p => p.Phone == storeCreateViewModel.Phone);
+                if (phoneExist)
+                {
+                    ModelState.AddModelError("Phone", "Can't Create, This Phone is Already Exist");
+                    return View();
+                }
+
+                var emailExist = _context.Store.Any(e => e.Email == storeCreateViewModel.Email);
+                if (emailExist)
+                {
+                    ModelState.AddModelError("Email", "Can't Create, This Email is Already Exist");
+                    return View();
+                }
+
                 Store store = new Store()
                 {
                     StoreName = storeCreateViewModel.StoreName,
