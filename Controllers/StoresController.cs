@@ -85,15 +85,26 @@ namespace StoreProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("StoreId,StoreName,Phone,Email,Street,City,State,ZipCodde")] Store store)
+        public async Task<IActionResult> Create(StoreCreateViewModel storeCreateViewModel)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(store);
+                Store store = new Store()
+                {
+                    StoreName = storeCreateViewModel.StoreName,
+                    Phone = storeCreateViewModel.Phone,
+                    Email = storeCreateViewModel.Email,
+                    Street = storeCreateViewModel.Street,
+                    City = storeCreateViewModel.City,
+                    State = storeCreateViewModel.State,
+                    ZipCode = storeCreateViewModel.ZipCode 
+                };
+
+                _context.Store.Add(store);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(store);
+            return View(storeCreateViewModel);
         }
 
         // GET: Stores/Edit/5
