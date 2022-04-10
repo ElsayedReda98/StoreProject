@@ -4,6 +4,8 @@ namespace StoreProject.ViewModels.Stores
 {
     public class StoreEditViewModel
     {
+        public int StoreId { get; set; }
+
         [Required]
         [Display(Name ="Store Name")]
         [StringLength(255)]

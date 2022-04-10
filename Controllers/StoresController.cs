@@ -19,14 +19,9 @@ namespace StoreProject.Controllers
 
         public StoresController(StoreProjectContext context)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(Index)); ;
+            _context = context ?? throw new ArgumentNullException(nameof(context)); ;
         }
 
-        // GET: Stores
-        //public async Task<IActionResult> Index()
-        //{
-        //    return View(await _context.Store.ToListAsync());
-        //}
         public async Task<IActionResult> Index(StoreIndexViewModel storeIndexViewModel)
         {
             IQueryable<Store> stores = from s in _context.Store
@@ -106,7 +101,7 @@ namespace StoreProject.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             var store = await _context.Store.FindAsync(id);
@@ -114,7 +109,19 @@ namespace StoreProject.Controllers
             {
                 return NotFound();
             }
-            return View(store);
+            StoreEditViewModel storeEditViewModel = new StoreEditViewModel()
+            {
+                StoreName = store.StoreName,
+                Phone = store.Phone,
+                Email = store.Email,
+                Street = store.Street,
+                City = store.City,
+                State = store.State,
+                ZipCode = store.ZipCode
+
+            };
+
+            return View(storeEditViewModel);
         }
 
         // POST: Stores/Edit/5
