@@ -129,34 +129,38 @@ namespace StoreProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("StoreId,StoreName,Phone,Email,Street,City,State,ZipCodde")] Store store)
+        public async Task<IActionResult> Edit(int id, StoreEditViewModel storeEditViewModel )
         {
-            if (id != store.StoreId)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
-                try
+                var store = await _context.Store.FindAsync(id);
+                
+                if (store == null)
                 {
-                    _context.Update(store);
+                    return NotFound();
+                }
+
+                if (ModelState.IsValid)
+                {
+                    store.StoreName = storeEditViewModel.StoreName;
+                    store.Phone = storeEditViewModel.Phone;
+                    store.Email = storeEditViewModel.Email;
+                    store.Street = storeEditViewModel.Street;
+                    store.City = storeEditViewModel.City;
+                    store.State = storeEditViewModel.State;
+                    store.ZipCode = storeEditViewModel.ZipCode;
+
                     await _context.SaveChangesAsync();
+
+                    return RedirectToAction(nameof(Index)); 
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!StoreExists(store.StoreId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+
             }
-            return View(store);
+            
+            
+            
+            
+            return View(storeEditViewModel);
         }
 
         // GET: Stores/Delete/5
