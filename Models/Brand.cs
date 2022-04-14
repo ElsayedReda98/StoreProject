@@ -8,7 +8,7 @@ namespace StoreProject.Models
         
         [Required]
         [Display(Name ="Brand Name" )]
-        [StringLength(50, MinimumLength = 3)]
+        [StringLength(255)]
         public string BrandName { get; set; }
 
         // relationship

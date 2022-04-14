@@ -21,27 +21,22 @@ namespace StoreProject.Controllers
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        // GET: Brands
-        //public async Task<IActionResult> Index()
-        //{
-        //    return View(await _context.Brand.ToListAsync());
-        //}
-        //************************************
         public async Task<IActionResult> Index(BrandListViewModel brandListViewModel)
         {
-            var brands = from b in _context.Brand
-                         select b;
+            IQueryable<Brand> brands = from b in _context.Brand
+                                       select b;
 
             if (!string.IsNullOrEmpty(brandListViewModel.SearchString))
             {
                 brands = brands.Where(s => s.BrandName.Contains(brandListViewModel.SearchString));
             }
+
             int pageSize = 4;
-            brandListViewModel.PageNumber = brandListViewModel.PageNumber <=0 ? 1 : brandListViewModel.PageNumber;
+            brandListViewModel.PageNumber = brandListViewModel.PageNumber <= 0 ? 1 : brandListViewModel.PageNumber;
 
             var count = await brands.CountAsync();
-            var items = await brands.OrderBy(b => b.BrandName)
-                  .Skip((brandListViewModel.PageNumber -1)* pageSize )
+            var items = await brands.OrderBy(b => b.BrandId)
+                  .Skip((brandListViewModel.PageNumber - 1) * pageSize)
                   .Take(pageSize).ToListAsync();
 
             brandListViewModel.Brands = new StaticPagedList<Brand>(items, brandListViewModel.PageNumber, pageSize, count);
@@ -78,17 +73,19 @@ namespace StoreProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BrandId,BrandName")] Brand brand)
+        public async Task<IActionResult> Create(Brand brand)
         {
+
             if (ModelState.IsValid)
             {
+
                 var nameIsExist = _context.Brand.Any(b => b.BrandName == brand.BrandName);
                 if (nameIsExist)
                 {
                     ModelState.AddModelError("BrandName", "Cant Create Brand, This Brand Name is Already Exist ");
                     return View(brand);
                 }
-                _context.Add(brand);
+                _context.Brand.Add(brand);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -100,11 +97,10 @@ namespace StoreProject.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            //var brand = await _context.Brand.FindAsync(id);
-            var brand = await _context.Brand.FirstOrDefaultAsync(s => s.BrandId == id);
+            var brand = await _context.Brand.FindAsync(id);
             if (brand == null)
             {
                 return NotFound();
@@ -117,49 +113,32 @@ namespace StoreProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("BrandId,BrandName")] Brand brand)
+        public async Task<IActionResult> Edit(int id, Brand brand)
         {
-            if (id != brand.BrandId)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
-                try
+                var nameIsExist = _context.Brand.Any(b => b.BrandName == brand.BrandName && b.BrandId != id);
+                if (nameIsExist)
                 {
-                    var nameIsExist = _context.Brand.Any(b => b.BrandName == brand.BrandName & b.BrandId != id );
-
-                    if (nameIsExist)
-                    {
-
-                        
-                            ModelState.AddModelError("brandname", "cant update brand, this brand name is already exist ");
-                            return View(brand);
-
-                            
-
-
-                    }
-                    _context.Update(brand);
-                    await _context.SaveChangesAsync();
-                    
-
+                    ModelState.AddModelError("brandname", "cant update brand, this brand name is already exist ");
+                    return View(brand);
                 }
-                catch (DbUpdateConcurrencyException)
+
+                var result = await _context.Brand.FindAsync(id);
+
+                if (result == null)
                 {
-                    if (!BrandExists(brand.BrandId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    return NotFound();
                 }
+
+                result.BrandName = brand.BrandName;
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
+
             }
             return View(brand);
+
         }
 
         // GET: Brands/Delete/5
