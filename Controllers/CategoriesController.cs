@@ -20,24 +20,16 @@ namespace StoreProject.Controllers
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
-        // Index Before Search
-        //*********************************************************
+
         // GET: Categories
-        //public async Task<IActionResult> Index()
-        //{
-        //    return View(await _context.Category.ToListAsync());
-        //}
-        //*********************************************************
-        
-        // Index After Search
         public async Task<IActionResult> Index(CategoryListViewModel categoryListViewModel)
         {
-            var categories = from c in _context.Category
-                           select c;
+            IQueryable<Category> categories = from c in _context.Category
+                                              select c;
 
             if (!string.IsNullOrEmpty(categoryListViewModel.SearchString))
             {
-               categories = categories.Where(c => c.CategoryName.Contains(categoryListViewModel.SearchString)); 
+                categories = categories.Where(c => c.CategoryName.Contains(categoryListViewModel.SearchString));
             }
 
             int pageSize = 5;
@@ -45,7 +37,7 @@ namespace StoreProject.Controllers
 
             var count = await categories.CountAsync();
             var item = await categories.OrderBy(c => c.CategoryName)
-                .Skip((categoryListViewModel.PageNumber -1 ) * pageSize)
+                .Skip((categoryListViewModel.PageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
@@ -85,7 +77,7 @@ namespace StoreProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CategoryId,CategoryName")] Category category)
+        public async Task<IActionResult> Create(Category category)
         {
             if (ModelState.IsValid)
             {
@@ -123,41 +115,28 @@ namespace StoreProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CategoryId,CategoryName")] Category category)
+        public async Task<IActionResult> Edit(int id, Category category)
         {
-            if (id != category.CategoryId)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
-                
-                try
+                var result = await _context.Category.FindAsync(id);
+                if (result is null)
                 {
-                    var nameAlreadyExist = _context.Category.Any(x => x.CategoryName == category.CategoryName && x.CategoryId != id);
-                    if (nameAlreadyExist)
-                    {
-                        ModelState.AddModelError("CategoryName", "Cant Update,This Category Name Already Exist ");
-                        return View(category);
-                    }
+                    return NotFound();
+                }
+                var nameAlreadyExist = _context.Category.Any(x => x.CategoryName == category.CategoryName && x.CategoryId != id);
+                if (nameAlreadyExist)
+                {
+                    ModelState.AddModelError("CategoryName", "Cant Update,This Category Name Already Exist ");
+                    return View(category);
+                }
 
-                    _context.Update(category);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CategoryExists(category.CategoryId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                result.CategoryName = category.CategoryName;
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
+             
             return View(category);
         }
 
